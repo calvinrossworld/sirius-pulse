@@ -1,0 +1,95 @@
+{
+  "artist": {
+    "stage_name": "Calvin Ross",
+    "genre": "R&B",
+    "subgenre": "dark R&B, moody trap-soul",
+    "career_stage": "Some traction",
+    "platforms": [
+      "instagram",
+      "tiktok"
+    ],
+    "promoting": "Single",
+    "model_artists": "SZA, Foushe\u00e9",
+    "challenge": "low engagement"
+  },
+  "plan": {
+    "profile_audit": "To a new fan, Calvin's profile likely appears inconsistent and overly promotional, lacking the personal connection that drives engagement in the moody R&B space. The feed probably focuses too much on the 'what' (the single) and not enough on the 'why' (the story, the emotion, the artist behind the music). To align with the dark trap-soul aesthetic, the visual identity and content pillars need to be more curated, vulnerable, and cinematic, inviting fans into his world rather than just telling them to stream a song.",
+    "platforms": {
+      "instagram": {
+        "content_types": [
+          "Cinematic 'Day in the Life' Reels showing mundane moments (night drives, solo studio sessions) set to your music to build atmosphere.",
+          "Lyric Breakdown Carousels: Post a moody photo as the cover, followed by slides dissecting 2-3 key lines from your single, explaining the double meanings or the real-life situation behind them.",
+          "Interactive Story Series: Use polls and question stickers for 'This or That: Songwriting Edition' or 'Ask Me Anything about the new single'.",
+          "Behind-the-Song Reels: A short, talking-head video explaining the single's core emotion or the one memory that sparked the entire track."
+        ],
+        "posting_frequency": "3-4 posts/Reels per week, Daily Stories (3-5 frames)",
+        "best_times": "Weekdays 6 PM - 9 PM EST, Weekends 1 PM - 4 PM EST",
+        "example_posts": [
+          {
+            "hook": "POV: you're finally admitting you were the toxic one.",
+            "format": "Reel",
+            "caption_hint": "Vulnerable caption about self-realization. End with a question like, 'Have you ever had to be the bad guy in your own story? Let's talk about it.' #trapsoul #rnbmusic #healing"
+          },
+          {
+            "hook": "3 lyrics from my new song that are actually a true story.",
+            "format": "Carousel",
+            "caption_hint": "Use the caption to elaborate on the story behind ONE of the three lyrics mentioned in the carousel. Encourage people to save the post for later. #songwriting #lyricism #darkrnb"
+          }
+        ]
+      },
+      "tiktok": {
+        "content_types": [
+          "Open Verse Challenge: Post a video of your single with 8 bars of the instrumental open, encouraging duets. Pin the best ones.",
+          "Aesthetic Video Prompts: Start a trend like 'Use this sound if you're in your villain era' or 'This sound for late night drives when you're overthinking everything.'",
+          "Song Deconstruction: Use the green screen effect to show your production session (e.g., Logic Pro, FL Studio) and isolate the specific sounds that create the 'moody' vibe.",
+          "Relatable Skits: Short, non-talking skits acting out a line from your song. E.g., for a lyric about being left on read, show yourself checking your phone, looking disappointed, then walking away into a dimly lit room."
+        ],
+        "posting_frequency": "4-6 videos per week",
+        "best_times": "Evenings 7 PM - 11 PM EST, Late Night 1 AM - 3 AM EST",
+        "example_posts": [
+          {
+            "hook": "Use this sound the next time you have to choose yourself.",
+            "format": "TikTok Video",
+            "caption_hint": "This one's for the people learning to set boundaries. #villainera #calvinross #trapsoul #newmusic"
+          },
+          {
+            "hook": "The story behind the saddest chord progression I've ever written.",
+            "format": "TikTok Video",
+            "caption_hint": "Talking head video where you briefly explain the music theory and the emotion it evokes. 'Felt this in my soul when I made it. Hope you feel it too.' #musicproducer #rnb #musictheory"
+          }
+        ]
+      }
+    },
+    "caption_framework": [
+      {
+        "template": "Wrote this one from a place of [specific emotion, e.g., 'quiet betrayal']. The line '[insert key lyric]' is about the moment I realized [brief explanation]. If you've been there, this one's for you. Link in bio. #darkrnb #[yourcity]musicscene",
+        "tone": "Introspective and Story-driven"
+      },
+      {
+        "template": "A soundtrack for [specific scenario, e.g., 'that 2 AM drive home alone']. What does this song make you think of? Let me know in the comments. // [Single Name] out now.",
+        "tone": "Cinematic and Engaging"
+      },
+      {
+        "template": "[Question related to a lyric, e.g., 'What's the hardest truth you've had to admit to yourself?']. For me, it was [your answer]. Poured all of that into this track. Listen now.",
+        "tone": "Vulnerable and Relatable"
+      }
+    ],
+    "calendar_30day": {
+      "week_1": "Re-introduction & Storytelling: Focus on content that tells the story *behind* the single. Post lyric breakdowns, talking-head Reels about the song's origin, and aesthetic videos that establish the song's moody world. Goal: Re-engage your current audience with high-value, personal content.",
+      "week_2": "UGC & Community Building: Launch an Open Verse Challenge on TikTok and heavily promote it on Instagram Stories. Spend 30-60 mins daily duetting/stitching/commenting on every video that uses your sound. Make your early fans feel like insiders.",
+      "week_3": "Artist Personality & Behind The Scenes: Shift focus to showing the person behind the music. Post 'a day in my life as an R&B artist,' clips of you working on *new* (unrelated) music, and do an Instagram Live Q&A. Goal: Turn casual listeners into dedicated fans.",
+      "week_4": "Optimization & Momentum: Analyze which content formats from Weeks 1-3 performed best. Create and post new variations of your top-performing videos. Repurpose your best TikToks as Reels to maximize reach and continue the conversation."
+    },
+    "growth_tactics": {
+      "take_action": [
+        "Spend 30 minutes a day on TikTok and Instagram engaging with content under hashtags like #sza, #foushee, #brentfaiyaz, and #6lack. Leave genuine, thoughtful comments on fan posts and other small artists' work; do not self-promote.",
+        "Identify your top 15 most engaged followers on Instagram and send each a personalized voice note or video DM, thanking them for their support and asking for their honest opinion on the new single.",
+        "Collaborate with a micro-influencer (5k-20k followers) who creates aesthetic/cinematic content (e.g., a videographer, a lifestyle creator with a moody vibe) to create one high-quality Reel using your sound."
+      ],
+      "avoid": [
+        "Posting static graphics with 'New Single Out Now!' text. These are low-engagement and get ignored. Always lead with a human element or a story.",
+        "Ignoring comments or DMs. In the growth stage, every single interaction matters. Reply to every comment, even if it's just an emoji, to signal that you're an active and engaged artist."
+      ]
+    }
+  }
+}

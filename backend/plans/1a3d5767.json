@@ -1,0 +1,77 @@
+{
+  "artist": {
+    "stage_name": "Calvin Ross",
+    "genre": "R&B",
+    "subgenre": "dark R&B, moody trap-soul",
+    "career_stage": "Some traction",
+    "platforms": [
+      "instagram",
+      "tiktok"
+    ],
+    "promoting": "Single",
+    "model_artists": "SZA, Foushe\u00e9",
+    "challenge": "low engagement"
+  },
+  "plan": {
+    "profile_audit": "To a new fan, Calvin Ross's profile likely showcases a talented artist with a strong, moody sound, but it lacks a compelling narrative to turn a passive listener into a dedicated follower. The feed probably feels like a series of promotional flyers rather than an invitation into his world, leading to low engagement because there's little for the audience to connect with beyond the music itself. The visual identity may be inconsistent, failing to fully capture the 'dark R&B' aesthetic he's aiming for.",
+    "platforms": {
+      "instagram": {
+        "content_types": [
+          "Lyric Breakdown Reels: Short videos where he explains the double meaning or story behind a specific, powerful line from the new single.",
+          "Aesthetic World-Building Carousels: Curated posts that act as moodboards for his music, combining his own photos with film stills, dark cityscapes, and fashion that match the trap-soul vibe.",
+          "Interactive Story Series: Using polls and question stickers to co-create with his audience (e.g., 'What vibe should my next song have? A or B?' or 'Finish this lyric...').",
+          "Lo-fi Studio Snippets: Intimate, dimly-lit clips of the creative process\u2014not just singing, but programming a beat, writing in a notebook, or finding a sample."
+        ],
+        "posting_frequency": "4-5 posts per week (2-3 Reels, 2 carousels/posts), plus daily Stories",
+        "best_times": "8 PM - 11 PM ET on weekdays; 2 PM - 5 PM ET on weekends",
+        "example_posts": [
+          {
+            "hook": "This is the most toxic lyric on my new single...",
+            "format": "Reel",
+            "caption_hint": "Explain the real-life situation that inspired the lyric in one sentence. End with a question: 'Have you ever been the bad guy in the story? Let's talk about it.'"
+          },
+          {
+            "hook": "The visual world of [Single Name]",
+            "format": "Carousel",
+            "caption_hint": "First slide is the cover art. Subsequent slides are moody photos (rainy window, neon sign, empty street). The caption explains how a specific image or color influenced the song's sound."
+          }
+        ]
+      },
+      "tiktok": {
+        "content_types": [
+          "Alternative Sound Usage: Create videos showing non-obvious ways to use the single's audio\u2014for a late-night drive POV, a GRWM for a date you're nervous about, or over cinematic B-roll of a city at night.",
+          "Vulnerable Storytelling: Start with on-screen text like 'That time I wrote a song about being ghosted...' and then lip-sync with intense eye contact as the hook drops.",
+          "Open Verse/Duet Challenge: Post a video with an instrumental section of the single and on-screen text 'Duet this with your side of the story'.",
+          "Rapid-Fire Lyric Meanings: A fast-paced video with quick cuts, using on-screen text to reveal the meaning of 3-4 different lines from the song."
+        ],
+        "posting_frequency": "1-2 times per day",
+        "best_times": "4 PM - 7 PM ET; 9 PM - 12 AM ET",
+        "example_posts": [
+          {
+            "hook": "POV: you're listening to this after you said things you can't take back",
+            "format": "TikTok Video",
+            "caption_hint": "The video is just you in a dimly lit room, looking at the camera. Caption: 'we've all been there. what's your go-to apology song? #darkrnb #trapsoul #[singlename]'"
+          },
+          {
+            "hook": "Rating my own toxic lyrics from [Single Name]",
+            "format": "TikTok Video",
+            "caption_hint": "Use the green screen effect with your lyrics on screen. Rate each one on a scale of 1-10 for toxicity and give a one-sentence explanation. This encourages comments and debate."
+          }
+        ]
+      }
+    },
+    "caption_framework": "Your tone is introspective, vulnerable, and slightly mysterious. Frame captions as entries in a diary or conversations with a close friend, always ending with a question to prompt a response. \n\n1. The Story Hook: '[Intriguing one-liner about the song's theme]. I wrote [Song Name] about the moment you realize _____. What's a sign that tells you it's over?'\n\n2. The Lyric Dissection: 'The line that says, \"[insert moody lyric]\". To me, that's about ____. What does it make you feel? Let me know in the comments.'\n\n3. The Aesthetic Question: 'This song feels like a rainy Tuesday night in a city you don't know. What color do you see when you hear it? Listen via link in bio and tell me.'",
+    "calendar_30day": "Week 1 (Launch): Focus on high-impact announcements. Post the 'Toxic Lyric' Reel and the 'Visual World' carousel. Go live on IG for 15 mins to talk about the song's creation. Post 2x daily on TikTok using storytelling hooks. \nWeek 2 (Engage): Shift to audience interaction. Launch the 'Duet Challenge' on TikTok. On Instagram, do a Story series asking fans to interpret lyrics and share the best answers to your feed. \nWeek 3 (Deepen): Share more personal, lo-fi content. Post a 'Studio Snippet' Reel showing how a specific part of the song was made. Create a TikTok showing 3 songs by other artists that inspired your single. Reply to DMs and comments via video. \nWeek 4 (Sustain): Keep the conversation going while teasing the future. Post a TikTok using the single's audio with the caption 'This song's story is finished... what should I write about next?'. Create and share a public playlist of songs with the same vibe as your single.",
+    "growth_tactics": {
+      "actions_next_7_days": [
+        "Engage Authentically: Spend 20 minutes daily on TikTok and Instagram searching hashtags like #rnbvibes, #sza, and #brentfaiyaz. Leave thoughtful comments (4+ words) on 10 posts from other creators or fans, adding to their conversation without promoting yourself.",
+        "Launch a Lyric Poll Series: For 5 days straight, post one line from your single to your Instagram Story with a poll: 'Relatable?' or 'Ever felt this?'. On day 6, compile the results and your thoughts into a Reel.",
+        "DM Your Top 10 Engagers: Find the 10 people who comment and like your posts the most. Send them a personal thank you video message and ask them what they'd love to see from you next."
+      ],
+      "things_to_avoid": [
+        "Posting and Ghosting: Do not post content and then close the app. For the first hour after posting, reply to every single comment to spark conversation and boost your post's visibility in the algorithm.",
+        "Using Only 'Stream Now' CTAs: Avoid generic calls-to-action. Instead of 'Link in Bio', frame it as a question: 'Want to hear the rest of the story? Link in Bio' or 'Listen and tell me which lyric hits you hardest.'"
+      ]
+    }
+  }
+}

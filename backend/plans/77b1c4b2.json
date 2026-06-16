@@ -1,0 +1,49 @@
+{
+  "artist": {
+    "stage_name": "Test",
+    "genre": "R&B",
+    "subgenre": "",
+    "career_stage": "Just starting",
+    "platforms": [
+      "instagram"
+    ],
+    "promoting": "Nothing specific",
+    "model_artists": "",
+    "challenge": ""
+  },
+  "plan": {
+    "profile_audit": "To a new fan, Test's profile currently feels like a personal page rather than a dedicated artist hub. The bio is generic, the profile picture could be more professional, and the content lacks a cohesive theme, making it difficult to understand the artist's sound and brand. It doesn't immediately signal 'emerging R&B artist' or give a compelling reason to follow for music updates.",
+    "platforms": {
+      "instagram": {
+        "content_types": [
+          "Raw Performance Reels: Intimate, one-take videos of you singing original snippets or covers, filmed with good audio.",
+          "Song Deconstruction Carousels: Break down the meaning behind a lyric, the chord progression of a song you love, or the production layers of an influence.",
+          "'Writer's Room' Stories: Use the story feature to show the messy parts of creation\u2014a notebook of lyrics, a voice memo screen recording, or a poll asking which melody sounds better.",
+          "Inspiration Moodboards: Static posts or carousels sharing non-musical inspirations (e.g., a film still, a color palette, a line from a poem) and explaining how it influences your sound."
+        ],
+        "posting_frequency": "4-5 posts per week (3 Reels, 2 Carousels/Static)",
+        "best_times": "Weekdays 6 PM - 9 PM, Weekends 1 PM - 4 PM (local time)",
+        "example_posts": [
+          {
+            "hook": "POV: You asked me what my song is about...",
+            "format": "Reel",
+            "caption_hint": "Start the video by looking at the camera, then cut to a raw performance. Caption: 'This one's about that moment you realize it's over before it is. Have you ever felt that? Let me know if I should finish this track.'"
+          },
+          {
+            "hook": "The R&B chord progression that changed my life.",
+            "format": "Reel",
+            "caption_hint": "A screen recording or top-down shot of you playing a specific chord progression (e.g., from a D'Angelo song) on a keyboard. Caption: 'This progression from [Song] by [Artist] taught me everything about tension and release. What song's chords hit you differently?'"
+          },
+          {
+            "hook": "My sound in 6 pictures.",
+            "format": "Carousel",
+            "caption_hint": "Create a visual moodboard. Slide 1 is the title. Slides 2-7 are images (late-night cityscapes, vintage film stills, textures). Caption: 'More than music, it's a feeling. This is what my current project feels like. Which slide is your favorite vibe?'"
+          }
+        ]
+      }
+    },
+    "caption_framework": "Your tone should be introspective, warm, and community-focused. Frame your captions as a conversation, not an announcement.\n\n1.  **The Story Behind the Song:** '[Start with the core emotion or a question]. Wrote these words thinking about [a specific memory or feeling]. For anyone who's ever felt [relatable experience], this is for you. // #rnbsoul #singersongwriter #newrnb #originalmusic'\n\n2.  **The Invitation:** 'Pulling back the curtain a bit today. This is where the ideas start - messy, unfinished, but honest. What do you want to see more of? The lyrics? The chords? The production fails? // #musicproduction #behindthemusic #artistprocess'\n\n3.  **The Community Check-in:** 'Just listening to [Artist Name] on repeat. The way they [specific musical detail] is masterful. Who are you listening to right now? Put me on to something new. // #musicdiscovery #rnbplaylist #inspiration'",
+    "calendar_30day": "Week 1: Foundation & Talent - Post two raw performance Reels (one cover, one original snippet) and one 'My Musical DNA' carousel (top 5 R&B albums that influenced you). Introduce yourself in Stories. \nWeek 2: Process & Personality - Post one 'Song Deconstruction' Reel, one 'Writer's Room' Story series showing a song being written, and a static post asking your new followers where they're from. \nWeek 3: Engagement & Expansion - Go Live for 15 mins to perform 2 songs and answer questions. Post a Reel covering a song suggested by a follower in Week 2. Post an 'Inspiration Moodboard' carousel.\nWeek 4: Solidify & Tease - Post a Reel showing a more produced/finished version of the snippet from Week 1. Announce you're starting a 'Close Friends' list for exclusive previews and ask people to comment to be added. Share a 'week in review' highlight reel.",
+    "growth_tactics": "Actions to take in the next 7 days:\n1. Find 15 other R&B artists with under 10k followers and leave specific, genuine comments on their last performance video (e.g., 'That vocal run at 0:18 gave me chills, incredible control').\n2. Use the 'Collab' feature on your next Reel with a producer, instrumentalist, or a fellow artist you know to cross-pollinate audiences.\n3. Stitch or Duet a Reel from a larger creator (e.g., a vocal coach reacting to singers, a musician asking 'what's your favorite R&B riff?') with your own take.\n\nThings to avoid:\n1. Don't just post your music. Follow the 80/20 rule: 80% of your content should provide value/entertainment (covers, tutorials, personality), and 20% should be direct promotion of your original work.\n2. Don't use a personal photo as your profile picture. Get a clear, high-quality headshot or artistic shot that communicates your R&B aesthetic (e.g., moody, warm, soulful)."
+  }
+}

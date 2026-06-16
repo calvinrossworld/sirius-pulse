@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sirius Pulse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="logo">
+        <span class="logo-icon">◎</span>
+        <span class="logo-name">SIRIUS PULSE</span>
+      </div>
+      <p class="tagline">Your artist's strategy, generated.</p>
+    </header>
+
+    <!-- Intake Form -->
+    <section id="form-section">
+      <div class="card">
+        <h2>Build Your Strategy</h2>
+        <p class="subtitle">Answer a few questions and get a full content plan in seconds.</p>
+
+        <form id="strategy-form">
+          <!-- Stage Name -->
+          <div class="field">
+            <label for="stage_name">Stage name *</label>
+            <input type="text" id="stage_name" name="stage_name" placeholder="Your stage name" required>
+          </div>
+
+          <!-- Genre -->
+          <div class="field">
+            <label for="genre">Genre *</label>
+            <select id="genre" name="genre" required>
+              <option value="" disabled selected>Select your genre</option>
+              <option value="R&B">R&B</option>
+              <option value="Hip-Hop">Hip-Hop</option>
+              <option value="Pop">Pop</option>
+              <option value="Afrobeats">Afrobeats</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <!-- Sub-genre -->
+          <div class="field">
+            <label for="subgenre">Sub-genre / style</label>
+            <input type="text" id="subgenre" name="subgenre" placeholder="">
+          </div>
+
+          <!-- Career Stage -->
+          <div class="field">
+            <label for="career_stage">Career stage *</label>
+            <select id="career_stage" name="career_stage" required>
+              <option value="" disabled selected>Where are you?</option>
+              <option value="Just starting">Just starting — building my foundation</option>
+              <option value="Some traction">Some traction — I have a small but loyal following</option>
+              <option value="Ready to scale">Ready to scale — I'm consistent and ready to go bigger</option>
+            </select>
+          </div>
+
+          <!-- Platforms -->
+          <div class="field">
+            <label>Platforms to focus on *</label>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" name="platforms" value="instagram"> Instagram
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="platforms" value="tiktok"> TikTok
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="platforms" value="youtube"> YouTube
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="platforms" value="twitter"> Twitter / X
+              </label>
+            </div>
+            <p class="field-hint">Select all you actively use or want to grow.</p>
+          </div>
+
+          <!-- Currently Promoting -->
+          <div class="field">
+            <label for="promoting">What are you promoting right now? *</label>
+            <select id="promoting" name="promoting" required>
+              <option value="" disabled selected>Select one</option>
+              <option value="Single">New single</option>
+              <option value="Album">Album / EP</option>
+              <option value="Tour">Tour / Show</option>
+              <option value="Brand deal">Brand deal / Partnership</option>
+              <option value="Nothing specific">Nothing specific — just building</option>
+            </select>
+          </div>
+
+          <!-- Model Artists -->
+          <div class="field">
+            <label for="model_artists">Artists to model after</label>
+            <input type="text" id="model_artists" name="model_artists" placeholder="e.g. SZA, JID, Fousheé...">
+          </div>
+
+          <!-- Challenge -->
+          <div class="field">
+            <label for="challenge">Biggest challenge right now</label>
+            <textarea id="challenge" name="challenge" rows="3" placeholder="e.g. I don't know what to post, I post but get no engagement..."></textarea>
+          </div>
+
+          <button type="submit" id="submit-btn">
+            <span class="btn-text">Generate My Strategy</span>
+            <span class="btn-loader" hidden>Generating...</span>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Loading State -->
+    <section id="loading-section" hidden>
+      <div class="card loading-card">
+        <div class="pulse-ring">
+          <div class="pulse-dot"></div>
+        </div>
+        <h2>Building your strategy...</h2>
+        <p>Analyzing your profile and crafting a personalized plan.</p>
+      </div>
+    </section>
+
+    <!-- Plan Display -->
+    <section id="plan-section" hidden>
+      <div class="plan-header">
+        <div>
+          <h2 id="plan-artist-name">Calvin Ross</h2>
+          <p>Your Sirius Pulse Strategy</p>
+        </div>
+        <button id="download-btn" class="btn-secondary">
+          <span>↓ Download PDF</span>
+        </button>
+      </div>
+
+      <div id="plan-content" class="plan-content"></div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

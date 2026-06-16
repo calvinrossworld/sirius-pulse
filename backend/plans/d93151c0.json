@@ -1,0 +1,64 @@
+{
+  "artist": {
+    "stage_name": "Test User",
+    "genre": "R&B",
+    "subgenre": "",
+    "career_stage": "Just starting",
+    "platforms": [
+      "instagram"
+    ],
+    "promoting": "Nothing specific",
+    "model_artists": "",
+    "challenge": ""
+  },
+  "plan": {
+    "profile_audit": "Your profile currently feels like a personal page with hints of musical talent, but it doesn't immediately establish you as an R&B artist. A new visitor might be unsure if you're pursuing music seriously due to a lack of a clear visual identity and consistent, high-quality performance content. To convert viewers into fans, we need to build a cohesive brand that showcases your voice, personality, and artistry with intention.",
+    "platforms": {
+      "instagram": {
+        "content_types": [
+          "Raw Acoustic Covers: One-take, vertical videos of you singing covers of trending or classic R&B songs. Focus on clean audio and emotive performance.",
+          "Songwriter's Notebook: Carousel posts or short Reels showing your creative process. This could be a screenshot of lyrics from your notes app, a screen recording of a beat you're working on, or you explaining the story behind one line.",
+          "Get To Know The Artist: Blend trends with your personality. Examples: A 'Get Ready With Me' Reel set to your favorite R&B playlist, a 'Top 5 R&B albums that changed my life' carousel, or a post sharing your non-music hobbies to build a personal connection.",
+          "Interactive Stories: Use polls, quizzes, and question stickers daily to engage your audience. Ask 'What should I cover next?', 'Finish this D'Angelo lyric...', or host a Q&A about your musical journey."
+        ],
+        "posting_frequency": "4-5 feed posts per week (3 Reels, 1-2 Carousels), with 5-7 unique Story slides daily.",
+        "best_times": "Weekdays 6 PM - 9 PM EST; Weekends 1 PM - 4 PM EST. Analyze your own Insights after 2 weeks to refine.",
+        "example_posts": [
+          {
+            "hook": "What if Frank Ocean wrote a song for Jazmine Sullivan?",
+            "format": "Reel",
+            "caption_hint": "Explain the concept of blending their styles in your performance. Ask followers, 'Which two artists should I mashup next?' and pin the best idea."
+          },
+          {
+            "hook": "3 lines from my notes app that might become your new favorite song.",
+            "format": "Carousel",
+            "caption_hint": "Share screenshots of 3 different lyric ideas. In the caption, ask followers to vote for the one you should finish first. Create a poll in your Stories to drive more engagement."
+          }
+        ]
+      }
+    },
+    "caption_framework": [
+      "Performance Post: 'Couldn't get this [Song Title] by [Original Artist] out of my head, so here's my take on it. That bridge hits different. What part of a song always gets you? Let me know \ud83d\udc47 #rnbcover #acousticcover #[artistname]'",
+      "Behind-the-Scenes Post: 'A little look at the late-night chaos where the ideas happen. Right now, it's just a simple chord progression and a mumbled melody, but I have a good feeling about this one. What's your creative space look like? #songwriting #rnbmusic #inthestudio'",
+      "Engaging Question: 'Serious question for my fellow R&B lovers: What's one album you can listen to from start to finish with zero skips? Mine is [Your Answer]. I need new recommendations, drop yours below.'",
+      "Personal Connection: 'Beyond the music, I'm really just [Your hobby/interest, e.g., a coffee addict, a vintage sci-fi nerd]. Sharing a bit more of my world today. What's something surprising about you all? #gettoknowme #[artistname]'"
+    ],
+    "calendar_30day": {
+      "week_1": "Foundation & Introduction: Post your first high-quality acoustic cover Reel. Create a 'Meet the Artist' carousel (name, genre, 3 biggest influences, a fun fact). Use Stories to ask for cover suggestions for next week. Establish the 'Songwriter's Notebook' format with one post.",
+      "week_2": "Showcase & Engage: Post a cover based on fan requests from Week 1. Go Live for 15-20 minutes to sing 2-3 songs and answer questions directly from the comments. Post a Reel showing your process of learning or arranging a new cover.",
+      "week_3": "Personality & Consistency: Post a 'GRWM' or 'Day in the Life' style Reel showing your personality outside of just singing. Do a deep-dive carousel on one of your favorite artists and why they inspire you. Post another high-quality cover.",
+      "week_4": "Build & Tease: Share a 15-second snippet of an original melody or lyric idea and ask for feedback. Engage with another emerging singer by 'stitching' or duetting their performance Reel with your own harmonies. Post a recap carousel of your 'Top 3 moments/covers from this month' and thank your new followers."
+    },
+    "growth_tactics": {
+      "next_7_days_actions": [
+        "Profile Optimization: Change your bio to 'Test User | R&B Singer \u2022 Songwriter'. Ensure your profile picture is a clear, high-quality headshot. Create a Linktree/Beacons link with placeholders for future music and add it to your bio.",
+        "Targeted Engagement: Identify 10 other R&B artists in your sub-genre who have 1k-10k followers. Turn on post notifications for them and leave thoughtful, specific comments on their new posts within the first hour of them posting.",
+        "Post a 'Hook' Reel: Record and post your first cover Reel using one of the example hooks. The goal is not just to sing, but to present the performance with an intriguing angle ('What if X song sounded like Y')."
+      ],
+      "things_to_avoid": [
+        "Avoid 'Ghost Following': Do not follow hundreds of random accounts hoping for a follow back. It ruins your feed, confuses the algorithm about your target audience, and leads to a low-engagement follower base.",
+        "Avoid Inconsistent Branding: Don't post a high-quality singing video one day and then a blurry, unrelated meme the next. Keep your feed's aesthetic and purpose focused on establishing your artist identity."
+      ]
+    }
+  }
+}

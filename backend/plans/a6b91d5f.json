@@ -1,0 +1,67 @@
+{
+  "artist": {
+    "stage_name": "Calvin Ross",
+    "genre": "R&B",
+    "subgenre": "dark R&B, moody trap-soul",
+    "career_stage": "Some traction",
+    "platforms": [
+      "instagram",
+      "tiktok"
+    ],
+    "promoting": "Single",
+    "model_artists": "SZA, Foushe\u00e9",
+    "challenge": "low engagement"
+  },
+  "plan": {
+    "profile_audit": "A new fan visiting Calvin Ross's profile would recognize the moody, dark R&B aesthetic but might struggle to feel a personal connection. The current feed likely prioritizes the 'what' (the music) over the 'who' (the artist), leading to passive listening instead of active fandom. To combat low engagement, the profile needs more personality, behind-the-scenes intimacy, and content that invites interaction beyond just listening.",
+    "platforms": {
+      "instagram": {
+        "content_types": [
+          "Aesthetic Lyric Reels: Short (10-15s) videos with powerful lyrics from the new single over atmospheric B-roll (night drives, rain on windows, neon lights) to build the song's world.",
+          "Songwriter Story Carousels: Break down the meaning behind a specific lyric. Slide 1: The lyric. Slide 2: A raw photo of you. Slide 3: A short note explaining the emotion or story.",
+          "Interactive Stories: Use polls ('Which lyric hits harder?') and Q&A stickers ('Ask me anything about the new single') to directly prompt engagement and gather fan feedback.",
+          "GRWM 'Studio Edition' Reels: Show your routine before a studio session or writing. Use the new single as the audio to connect your personal process with the final product."
+        ],
+        "posting_frequency": "4-5 posts per week (2-3 Reels, 2 Carousels) + Daily Stories",
+        "best_times": "Evenings (7 PM - 10 PM EST), Weekend Afternoons (1 PM - 4 PM EST)",
+        "example_posts": [
+          {
+            "hook": "This is for anyone who's ever felt invisible...",
+            "format": "Reel",
+            "caption_hint": "A short, vulnerable question. 'Ever poured your soul into someone and still felt unseen? This is that feeling. [Single Name] out now.'"
+          },
+          {
+            "hook": "The story behind the most painful lyric I've ever written.",
+            "format": "Carousel Post",
+            "caption_hint": "Create intrigue. 'Swipe to see the line that almost didn't make the cut. Sometimes the hardest things to say are the most necessary. Link in bio.'"
+          }
+        ]
+      },
+      "tiktok": {
+        "content_types": [
+          "Open Verse Challenge: Post the first verse/chorus and leave the second verse instrumental with 'DUET THIS: Write your side of the story' on screen.",
+          "'Sounds for Your Villain Era' clips: Use the most dramatic 8-10 seconds of the single with on-screen text like 'POV: you're finally choosing yourself' to tap into popular narratives.",
+          "Raw Acapella Takes: A simple, unfiltered video singing a key part of the song in a car or stairwell. The focus is on raw vocal talent and intimacy, like Foushe\u00e9's early videos.",
+          "Lyric Easter Eggs: A quick video pointing out a hidden meaning in a lyric or a subtle production detail, rewarding dedicated listeners."
+        ],
+        "posting_frequency": "5-7 videos per week (1 per day minimum)",
+        "best_times": "Late Night (9 PM - 12 AM EST), Lunch Breaks (12 PM - 2 PM EST)",
+        "example_posts": [
+          {
+            "hook": "Use this sound when you're done explaining yourself.",
+            "format": "TikTok Video",
+            "caption_hint": "Connect the sound to a relatable mood. 'My new single is the official anthem for your villain era. #darkrnb #trapsoul #sza #newmusic'"
+          },
+          {
+            "hook": "Singing the part of my song that gives me chills every time.",
+            "format": "TikTok Video",
+            "caption_hint": "Show vulnerability and talent. 'Just a raw take in the car. Let me know if this part gets you too. #rawvocals #rnbmusic #singingchallenge'"
+          }
+        ]
+      }
+    },
+    "caption_framework": "Your tone is introspective and vulnerable with an edge, like a private journal entry made public.\n\nTemplate 1 (Story-driven): '[Specific, relatable scenario related to the song]. That's the feeling I poured into this track. Have you been there? Let me know in the comments.'\n\nTemplate 2 (Direct & Moody): 'Late night thoughts. This one's for the overthinkers and the heartbroken. [Single Name] out now.'\n\nTemplate 3 (Interactive): 'Line from the new single: \"[Insert powerful lyric]\". What memory does this bring up for you? Sharing my favorites to my story.'",
+    "calendar_30day": "Week 1 (Launch): Focus on high-impact, music-forward content. Post raw acapella takes on TikTok and aesthetic lyric Reels on Instagram. Launch the 'Open Verse Challenge' on TikTok and heavily promote it on IG Stories.\n\nWeek 2 (Deepen Connection): Share the 'story behind the lyric' carousels on Instagram. React to and duet the best open verse submissions on TikTok. Post a 'GRWM: Studio Edition' reel to show your personality outside of the music.\n\nWeek 3 (Build Community): Go Live on Instagram for a fan Q&A and mini acoustic performance. Continue sharing User-Generated Content (videos using your sound). Create a TikTok using a trending sound but apply it to your artist journey.\n\nWeek 4 (Sustain & Tease): Repost the best-performing content from the month. Post a carousel detailing the 'making of the cover art'. End the month by teasing a demo snippet on TikTok with the caption 'Should this be next?'",
+    "growth_tactics": "Actions to take in the next 7 days:\n1. Duet/Stitch Strategy: Find 5 TikToks using SZA or Foushe\u00e9 sounds and stitch them, adding your own raw vocal run or commentary that fits the mood.\n2. Targeted Engagement: Daily, find 10 creator accounts under 25k followers in the dark R&B/trap-soul niche and leave genuine, specific comments on their content.\n3. Launch the Open Verse Challenge: On Day 3 of your launch week, post the challenge and pin it to your TikTok profile. DM the link to 20 of your most active followers and ask them to participate.\n\nThings to avoid:\n1. Avoid 'Link in Bio' on TikTok: Don't make your main call-to-action 'link in bio'. Instead, encourage engagement within the app (duets, comments, using the sound). The algorithm rewards users staying on the platform.\n2. Avoid Inconsistent Aesthetics: Don't mix polished, high-production music videos with random, low-effort memes. All content should feel like it belongs to the same moody, introspective world."
+  }
+}
