@@ -121,7 +121,27 @@ async function displayPlan(planId, artistName) {
 
   // Growth Tactics
   if (plan.growth_tactics) {
-    planContent.appendChild(makeCard('Growth Tactics', plan.growth_tactics));
+    const gt = plan.growth_tactics;
+    if (typeof gt === 'object') {
+      const card = document.createElement('div');
+      card.className = 'plan-card';
+      let html = '<div class="plan-section-title">Growth Tactics</div><div class="plan-body">';
+      if (gt.next_7_days_actions?.length) {
+        html += '<strong>Next 7 Days:</strong><ul>';
+        gt.next_7_days_actions.forEach(a => { html += `<li>${a}</li>`; });
+        html += '</ul>';
+      }
+      if (gt.things_to_avoid?.length) {
+        html += '<strong>Avoid:</strong><ul>';
+        gt.things_to_avoid.forEach(a => { html += `<li>${a}</li>`; });
+        html += '</ul>';
+      }
+      html += '</div>';
+      card.innerHTML = html;
+      planContent.appendChild(card);
+    } else {
+      planContent.appendChild(makeCard('Growth Tactics', gt));
+    }
   }
 
   loadingSection.hidden = true;

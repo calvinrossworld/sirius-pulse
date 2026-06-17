@@ -82,4 +82,16 @@ def generate_plan(artist_data: dict) -> dict:
             raw = raw[4:]
         raw = raw.strip()
 
-    return json.loads(raw)
+    result = json.loads(raw)
+
+    # Normalize growth_tactics to string if model returned an object
+    gt = result.get("growth_tactics")
+    if isinstance(gt, dict):
+        parts = []
+        if gt.get("next_7_days_actions"):
+            parts.append("Next 7 days: " + ". ".join(gt["next_7_days_actions"]))
+        if gt.get("things_to_avoid"):
+            parts.append("Avoid: " + ". ".join(gt["things_to_avoid"]))
+        result["growth_tactics"] = " | ".join(parts)
+
+    return result
