@@ -10,7 +10,7 @@ client = OpenAI(
 
 SYSTEM_PROMPT = """You are a world-class social media strategist specializing in music artists. You generate optimized, platform-specific hashtags that actually get discovered."""
 
-USER_PROMPT_TEMPLATE = """Generate hashtags for a music artist. Return ONLY valid JSON — no markdown, no explanation.
+USER_PROMPT_TEMPLATE = """Generate hashtags for a music artist. You MUST return ONLY valid JSON — no markdown, no code blocks, no explanation. Just a raw JSON object.
 
 Artist: {stage_name}
 Genre: {genre}
@@ -18,29 +18,48 @@ Sub-genre/Style: {subgenre}
 Promoting: {promoting}
 Platforms: {platforms}
 
-Return this exact JSON structure:
+Output format — fill in ALL sections for ALL platforms listed:
 {{
   "hashtags": {{
     "instagram": {{
-      "Genre Tags": ["#genre #genreartist etc — broad discovery"],
-      "Niche Tags": ["#mood #vibe #aesthetic — targeted to their specific style"],
-      "Trending Tags": ["currently popular music hashtags in their lane"],
-      "Artist Tags": ["#YourArtistName or variations they own"],
-      "Campaign Tags": ["#{promoting} or relevant campaign tags"]
+      "Genre Tags": ["tag1", "tag2", "tag3"],
+      "Niche Tags": ["tag1", "tag2", "tag3"],
+      "Trending Tags": ["tag1", "tag2", "tag3"],
+      "Artist Tags": ["tag1", "tag2", "tag3"],
+      "Campaign Tags": ["tag1", "tag2", "tag3"]
     }},
-    "tiktok": {{ ... same structure ... }},
-    "youtube": {{ ... same structure ... }},
-    "twitter": {{ ... same structure ... }}
+    "tiktok": {{
+      "Genre Tags": ["tag1", "tag2", "tag3"],
+      "Niche Tags": ["tag1", "tag2", "tag3"],
+      "Trending Tags": ["tag1", "tag2", "tag3"],
+      "Artist Tags": ["tag1", "tag2", "tag3"],
+      "Campaign Tags": ["tag1", "tag2", "tag3"]
+    }},
+    "youtube": {{
+      "Genre Tags": ["tag1", "tag2", "tag3"],
+      "Niche Tags": ["tag1", "tag2", "tag3"],
+      "Trending Tags": ["tag1", "tag2", "tag3"],
+      "Artist Tags": ["tag1", "tag2", "tag3"],
+      "Campaign Tags": ["tag1", "tag2", "tag3"]
+    }},
+    "twitter": {{
+      "Genre Tags": ["tag1", "tag2", "tag3"],
+      "Niche Tags": ["tag1", "tag2", "tag3"],
+      "Trending Tags": ["tag1", "tag2", "tag3"],
+      "Artist Tags": ["tag1", "tag2", "tag3"],
+      "Campaign Tags": ["tag1", "tag2", "tag3"]
+    }}
   }}
 }}
 
 Rules:
 - 8-12 hashtags per category per platform
-- Mix of follower sizes: some huge (#100k+ posts), some mid, some small niche
-- Never suggest hashtags with millions of posts that are completely dominated by established artists
-- Include 1-2 ultra-specific niche tags that have low competition
-- Hashtags must be relevant to {genre} and {subgenre}
-- Return valid JSON only"""
+- All strings in double quotes
+- No trailing commas
+- No None, null, or undefined values — use empty arrays [] if needed
+- Mix of follower sizes: some huge broad hashtags, some mid, some ultra-specific niche (low competition)
+- Hashtags must be directly relevant to {genre} and {subgenre}
+- Only include platforms from the list above"""
 
 
 def generate_hashtags(genre: str, subgenre: str, promoting: str, stage_name: str, platforms: list[str]) -> dict:
@@ -70,4 +89,14 @@ def generate_hashtags(genre: str, subgenre: str, promoting: str, stage_name: str
             raw = raw[4:]
         raw = raw.strip()
 
-    return json.loads(raw)
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError as e:
+        # Try to fix common issues
+        raw = raw.replace("'", '"')
+        raw = raw.replace(",}", "}")
+        raw = raw.replace(",]", "]")
+        try:
+            return json.loads(raw)
+        except json.JSONDecodeError:
+            raise ValueError(f"AI returned invalid JSON: {raw[:200]}")
