@@ -81,6 +81,13 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     .loader-text { color: #9CA3AF; font-size: 16px; margin-bottom: 8px; }
     .loader-sub { color: #4B5563; font-size: 13px; }
+    #bio-options { animation: fadeIn 0.2s ease; }
+    .bio-variant { background: #0A0A0A; border: 1px solid #1F2937; border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+    .bio-variant:last-child { margin-bottom: 0; }
+    .bio-variant-label { font-size: 11px; font-weight: 700; color: #4F8EFF; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+    .bio-variant-text { font-size: 14px; color: #D1D5DB; line-height: 1.6; }
+    .bio-char { font-size: 11px; color: #4B5563; margin-top: 6px; }
+    .results-divider { height: 1px; background: #1F2937; margin: 28px 0; }
 
     /* Results */
     .results-wrap { display: none; }
@@ -242,6 +249,33 @@
         <!-- Filled by JS -->
       </div>
 
+      <!-- Bio opt-in -->
+      <div class="card" id="bio-optin-card" style="border-color:#374151;">
+        <label style="display:flex;align-items:flex-start;gap:14px;cursor:pointer;user-select:none;">
+          <input type="checkbox" id="gen-bio-check" onchange="toggleBioOpts()" style="width:20px;height:20px;margin-top:2px;accent-color:#4F8EFF;cursor:pointer;flex-shrink:0;">
+          <div>
+            <div style="font-size:15px;font-weight:700;margin-bottom:4px;">Also generate my bio</div>
+            <div style="font-size:13px;color:#6B7280;">Get Instagram, TikTok, and EPK bios tailored to your artist profile — no extra form to fill out.</div>
+          </div>
+        </label>
+        <div id="bio-options" style="display:none;margin-top:18px;padding-top:18px;border-top:1px solid #1F2937;">
+          <div class="field">
+            <label>Primary platform</label>
+            <div class="select-wrap">
+              <select id="bio-platform">
+                <option value="instagram">Instagram</option>
+                <option value="tiktok">TikTok</option>
+                <option value="epk">EPK (Electronic Press Kit)</option>
+              </select>
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label>Artist vibe or description <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#6B7280;font-size:12px">(optional)</span></label>
+            <input type="text" id="bio-about" placeholder="e.g. dark, moody, late-night drive vibes">
+          </div>
+        </div>
+      </div>
+
       <div class="btn-row">
         <button class="btn-back" onclick="prevStep(4)">← Back</button>
         <button class="btn-generate" id="btn-generate" onclick="submitStrategy()">
@@ -385,24 +419,62 @@
       `;
     }
 
+    function toggleBioOpts() {
+      const checked = document.getElementById('gen-bio-check').checked;
+      document.getElementById('bio-options').style.display = checked ? 'block' : 'none';
+      const btn = document.getElementById('btn-generate');
+      btn.textContent = checked ? 'Generate Strategy + Bio' : 'Generate My Strategy';
+    }
+
     async function submitStrategy() {
       clearError(4);
+      const wantBio = document.getElementById('gen-bio-check').checked;
       document.getElementById('step-4').classList.remove('active');
       document.getElementById('progress-wrap').style.display = 'none';
+      const loaderText = document.querySelector('.loader-text');
+      const loaderSub = document.querySelector('.loader-sub');
+      loaderText.textContent = wantBio ? 'Building your strategy & generating your bio…' : 'Building your strategy…';
+      loaderSub.textContent = wantBio ? 'This takes about 20–40 seconds' : 'This takes about 20–30 seconds';
       document.getElementById('loading-section').style.display = 'block';
 
       try {
-        const res = await fetch(API_BASE + '/generate', {
+        // Fire strategy + optional bio in parallel
+        const strategyPromise = fetch(API_BASE + '/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
         });
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
+
+        let bioResult = null;
+        if (wantBio) {
+          const platform = document.getElementById('bio-platform').value;
+          const about = document.getElementById('bio-about').value.trim();
+          const bioPayload = {
+            stage_name: formData.stage_name,
+            genre: formData.genre,
+            subgenre: formData.subgenre || '',
+            career_stage: formData.career_stage,
+            vibes: [],
+            about: about,
+            platform: platform,
+          };
+          const bioRes = await fetch(API_BASE + '/bio', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bioPayload),
+          });
+          if (!bioRes.ok) throw new Error('Bio generation failed');
+          const bioData = await bioRes.json();
+          bioResult = bioData.bios;
+        }
+
+        const strategyRes = await strategyPromise;
+        if (!strategyRes.ok) {
+          const err = await strategyRes.json().catch(() => ({}));
           throw new Error(err.detail || 'Generation failed');
         }
-        const data = await res.json();
-        showResults(data.plan_id);
+        const strategyData = await strategyRes.json();
+        showResults(strategyData.plan_id, bioResult);
       } catch (err) {
         document.getElementById('loading-section').style.display = 'none';
         document.getElementById('step-4').classList.add('active');
@@ -411,19 +483,11 @@
       }
     }
 
-    function showResults(planId) {
+    function showResults(planId, bioResult) {
       document.getElementById('loading-section').style.display = 'none';
       document.getElementById('results-section').classList.add('show');
 
-      const planData = {
-        plan_id: planId,
-        artist: formData.stage_name,
-        genre: formData.genre,
-        platforms: formData.platforms,
-        promoting: formData.promoting
-      };
-
-      document.getElementById('results-plan').innerHTML = `
+      let html = `
         <div class="card">
           <div class="review-item">
             <div class="review-key">Plan ID</div>
@@ -439,10 +503,29 @@
           </div>
         </div>
         <div style="display:flex;flex-direction:column;gap:12px;margin-top:20px">
-          <a href="/#plan-section" onclick="alert('Your strategy will appear in the main app. Returning home.')" class="btn-primary" style="text-align:center;text-decoration:none;display:block">View Full Strategy</a>
-          <button class="btn-next" onclick="window.location.href='/'" style="background:#1F2937;color:#9CA3AF;font-weight:600">Start Over</button>
-        </div>
-      `;
+          <a href="/" onclick="alert('Your strategy will appear in the main app. Returning home.')" class="btn-primary" style="text-align:center;text-decoration:none;display:block">View Full Strategy</a>
+          <button class="btn-next" onclick="window.location.href='/strategy'" style="background:#1F2937;color:#9CA3AF;font-weight:600">Start Over</button>
+        </div>`;
+
+      // Bio results
+      if (bioResult && bioResult.length > 0) {
+        const platformLabel = { instagram: 'Instagram Bio', tiktok: 'TikTok Bio', epk: 'EPK Bio' };
+        const platform = document.getElementById('bio-platform')?.value || 'instagram';
+        html += `
+          <div class="results-divider"></div>
+          <div style="margin-bottom:8px"><span style="font-size:13px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:1px;">Your Generated Bios</span></div>
+          <div class="card">
+            ${bioResult.map((bio, i) => `
+              <div class="bio-variant">
+                <div class="bio-variant-label">Variant ${i + 1}</div>
+                <div class="bio-variant-text">${bio.text || bio}</div>
+                ${bio.text ? `<div class="bio-char">${bio.text.length} characters${platform !== 'epk' && bio.text.length > 150 ? ' (may need trimming for ' + platform + ')' : ''}</div>` : ''}
+              </div>
+            `).join('')}
+          </div>`;
+      }
+
+      document.getElementById('results-plan').innerHTML = html;
       document.getElementById('plan-id-display').textContent = 'Plan ID: ' + planId;
     }
   </script>
