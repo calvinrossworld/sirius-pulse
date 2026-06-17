@@ -109,9 +109,14 @@ async def download_plan(plan_id: str = PathParam(..., description="Plan ID")):
     )
 
 
+@app.get("/strategy")
+async def strategy_page():
+    return FileResponse(FRONTEND_DIR / "strategy.html")
+
+
 @app.get("/")
 async def root():
-    return FileResponse(FRONTEND_DIR / "index.html")
+    return FileResponse(FRONTEND_DIR / "strategy.html")
 
 
 @app.get("/audit")

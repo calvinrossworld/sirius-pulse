@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content Strategy — Sirius Pulse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    body { background: #0A0A0A; color: #fff; font-family: 'Inter', sans-serif; min-height: 100vh; }
+    .container { max-width: 600px; margin: 0 auto; padding: 40px 20px 80px; }
+
+    /* Logo */
+    .logo-link { text-decoration: none; color: inherit; display: inline-block; margin-bottom: 36px; }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-icon { font-size: 24px; color: #4F8EFF; }
+    .logo-name { font-size: 16px; font-weight: 700; letter-spacing: 3px; }
+
+    /* Progress bar */
+    .progress-wrap { margin-bottom: 40px; }
+    .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: #6B7280; margin-bottom: 8px; }
+    .progress-bar { height: 4px; background: #1F2937; border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; background: #4F8EFF; border-radius: 4px; transition: width 0.4s ease; }
+    .step-dots { display: flex; justify-content: space-between; margin-top: 12px; }
+    .step-dot { width: 10px; height: 10px; border-radius: 50%; background: #1F2937; transition: all 0.3s; }
+    .step-dot.active { background: #4F8EFF; box-shadow: 0 0 8px #4F8EFF80; }
+    .step-dot.done { background: #22C55E; }
+
+    /* Step pages */
+    .step { display: none; }
+    .step.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .step-title { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+    .step-subtitle { color: #6B7280; font-size: 14px; margin-bottom: 28px; }
+
+    /* Form card */
+    .card { background: #111827; border: 1px solid #1F2937; border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+    .field { margin-bottom: 20px; }
+    .field:last-child { margin-bottom: 0; }
+    label { display: block; font-size: 13px; font-weight: 600; color: #9CA3AF; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    input, select, textarea { width: 100%; background: #0A0A0A; border: 1px solid #374151; border-radius: 10px; color: #fff; font-size: 15px; font-family: 'Inter', sans-serif; padding: 12px 14px; box-sizing: border-box; outline: none; transition: border-color 0.2s; }
+    input:focus, select:focus, textarea:focus { border-color: #4F8EFF; }
+    textarea { min-height: 80px; resize: vertical; }
+    select { cursor: pointer; -webkit-appearance: none; }
+    .select-wrap { position: relative; }
+    .select-wrap::after { content: '▼'; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 10px; color: #6B7280; pointer-events: none; }
+
+    /* Platform pills */
+    .platform-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+    .platform-pill { display: flex; align-items: center; gap: 8px; cursor: pointer; background: #0A0A0A; border: 1px solid #374151; border-radius: 10px; padding: 12px 16px; font-size: 14px; color: #9CA3AF; transition: all 0.2s; user-select: none; flex: 1 1 calc(50% - 5px); min-width: 0; }
+    .platform-pill input { width: auto; margin: 0; padding: 0; cursor: pointer; accent-color: #4F8EFF; }
+    .platform-pill.selected { border-color: #4F8EFF; background: #4F8EFF15; color: #4F8EFF; }
+    .platform-pill .icon { font-size: 16px; }
+
+    /* Review summary */
+    .review-item { padding: 12px 0; border-bottom: 1px solid #1F2937; }
+    .review-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .review-key { font-size: 11px; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+    .review-val { font-size: 15px; color: #fff; }
+    .review-val.empty { color: #4B5563; font-style: italic; }
+
+    /* Navigation buttons */
+    .btn-row { display: flex; gap: 12px; }
+    .btn-next, .btn-generate { background: #4F8EFF; color: #fff; border: none; border-radius: 12px; padding: 16px 24px; font-size: 16px; font-weight: 700; cursor: pointer; flex: 1; transition: background 0.2s; }
+    .btn-next:hover, .btn-generate:hover { background: #3B7BF5; }
+    .btn-next:disabled { background: #374151; color: #6B7280; cursor: not-allowed; }
+    .btn-back { background: transparent; border: 1px solid #374151; color: #9CA3AF; border-radius: 12px; padding: 16px 24px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; flex: 0 0 auto; }
+    .btn-back:hover { border-color: #6B7280; color: #fff; }
+    .btn-generate { background: #22C55E; }
+    .btn-generate:hover { background: #16A34A; }
+
+    /* Error */
+    .error-msg { background: #EF444420; border: 1px solid #EF444440; border-radius: 10px; padding: 14px; color: #FCA5A5; font-size: 14px; margin-top: 12px; display: none; }
+    .error-msg.show { display: block; }
+
+    /* Loader */
+    .loader-wrap { text-align: center; padding: 80px 20px; }
+    .loader { width: 56px; height: 56px; border: 4px solid #1F2937; border-top-color: #4F8EFF; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 24px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-text { color: #9CA3AF; font-size: 16px; margin-bottom: 8px; }
+    .loader-sub { color: #4B5563; font-size: 13px; }
+
+    /* Results */
+    .results-wrap { display: none; }
+    .results-wrap.show { display: block; }
+    .results-header { text-align: center; margin-bottom: 32px; }
+    .results-header h1 { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+    .success-badge { display: inline-block; background: #22C55E20; color: #22C55E; font-size: 13px; font-weight: 700; padding: 6px 16px; border-radius: 20px; margin-bottom: 16px; }
+    .plan-id { font-size: 12px; color: #4B5563; margin-top: 16px; }
+
+    /* Floating side tools */
+    .side-tools { position: fixed; right: 0; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 4px; z-index: 50; }
+    .side-tool { writing-mode: vertical-rl; text-orientation: mixed; background: #1F2937; color: #6B7280; font-size: 11px; font-weight: 600; padding: 12px 6px; border-radius: 8px 0 0 8px; text-decoration: none; letter-spacing: 1px; transition: all 0.2s; }
+    .side-tool:hover { background: #374151; color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="logo-link">
+      <div class="logo">
+        <span class="logo-icon">◎</span>
+        <span class="logo-name">SIRIUS PULSE</span>
+      </div>
+    </a>
+
+    <!-- Progress -->
+    <div class="progress-wrap" id="progress-wrap">
+      <div class="progress-label">
+        <span id="progress-step-label">Step 1 of 4</span>
+        <span id="progress-percent">25%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:25%"></div></div>
+      <div class="step-dots">
+        <div class="step-dot active" id="dot-1"></div>
+        <div class="step-dot" id="dot-2"></div>
+        <div class="step-dot" id="dot-3"></div>
+        <div class="step-dot" id="dot-4"></div>
+      </div>
+    </div>
+
+    <!-- STEP 1: Artist Basics -->
+    <div class="step active" id="step-1">
+      <div class="step-title">Let's start with you</div>
+      <div class="step-subtitle">Tell us who you are as an artist.</div>
+
+      <div class="card">
+        <div class="field">
+          <label>Stage Name</label>
+          <input type="text" id="s1-name" placeholder="Your artist name">
+        </div>
+        <div class="field">
+          <label>Genre</label>
+          <div class="select-wrap">
+            <select id="s1-genre">
+              <option value="" disabled selected>Select genre</option>
+              <option>R&B</option>
+              <option>Hip-Hop</option>
+              <option>Pop</option>
+              <option>Afrobeats</option>
+              <option>Neo-Soul</option>
+              <option>Alt R&B</option>
+              <option>Trap</option>
+              <option>Dancehall</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Sub-genre / Style <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#6B7280;font-size:12px">(optional)</span></label>
+          <input type="text" id="s1-subgenre" placeholder="e.g. dark R&B, moody, drill-adjacent">
+        </div>
+        <div class="field">
+          <label>Career Stage</label>
+          <div class="select-wrap">
+            <select id="s1-stage">
+              <option value="" disabled selected>Where are you right now?</option>
+              <option>Just starting out</option>
+              <option>Building some traction</option>
+              <option>Ready to scale</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-next" id="btn-1-next" onclick="nextStep(1)">Continue →</button>
+      </div>
+      <div class="error-msg" id="err-1"></div>
+    </div>
+
+    <!-- STEP 2: Platforms & Goals -->
+    <div class="step" id="step-2">
+      <div class="step-title">Where do you post?</div>
+      <div class="step-subtitle">Select every platform you're active on.</div>
+
+      <div class="card">
+        <div class="field">
+          <label>Platforms</label>
+          <div class="platform-grid">
+            <label class="platform-pill" id="pill-instagram" onclick="togglePill('instagram', this)">
+              <input type="checkbox" id="s2-ig" value="instagram">
+              <span class="icon">📸</span> Instagram
+            </label>
+            <label class="platform-pill" id="pill-tiktok" onclick="togglePill('tiktok', this)">
+              <input type="checkbox" id="s2-tiktok" value="tiktok">
+              <span class="icon">🎵</span> TikTok
+            </label>
+            <label class="platform-pill" id="pill-youtube" onclick="togglePill('youtube', this)">
+              <input type="checkbox" id="s2-yt" value="youtube">
+              <span class="icon">▶️</span> YouTube
+            </label>
+            <label class="platform-pill" id="pill-twitter" onclick="togglePill('twitter', this)">
+              <input type="checkbox" id="s2-tw" value="twitter">
+              <span class="icon">🐦</span> Twitter/X
+            </label>
+          </div>
+        </div>
+        <div class="field" style="margin-top:20px">
+          <label>What are you promoting?</label>
+          <input type="text" id="s2-promoting" placeholder="e.g. New single 'Night Drive', album drop, brand deal">
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-back" onclick="prevStep(2)">← Back</button>
+        <button class="btn-next" id="btn-2-next" onclick="nextStep(2)">Continue →</button>
+      </div>
+      <div class="error-msg" id="err-2"></div>
+    </div>
+
+    <!-- STEP 3: Context -->
+    <div class="step" id="step-3">
+      <div class="step-title">A little context</div>
+      <div class="step-subtitle">Help us personalize your strategy.</div>
+
+      <div class="card">
+        <div class="field">
+          <label>Artists you aspire to <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#6B7280;font-size:12px">(optional)</span></label>
+          <input type="text" id="s3-models" placeholder="e.g. SZA, Brent Faiyaz, Giveon">
+        </div>
+        <div class="field">
+          <label>Biggest challenge right now <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#6B7280;font-size:12px">(optional)</span></label>
+          <textarea id="s3-challenge" placeholder="e.g. Getting people to engage, converting followers to fans, posting consistently..."></textarea>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-back" onclick="prevStep(3)">← Back</button>
+        <button class="btn-next" onclick="nextStep(3)">Review →</button>
+      </div>
+      <div class="error-msg" id="err-3"></div>
+    </div>
+
+    <!-- STEP 4: Review & Generate -->
+    <div class="step" id="step-4">
+      <div class="step-title">Review your info</div>
+      <div class="step-subtitle">Looks good? Hit generate to get your strategy.</div>
+
+      <div class="card" id="review-card">
+        <!-- Filled by JS -->
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-back" onclick="prevStep(4)">← Back</button>
+        <button class="btn-generate" id="btn-generate" onclick="submitStrategy()">
+          Generate My Strategy
+        </button>
+      </div>
+      <div class="error-msg" id="err-4"></div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loader-wrap" id="loading-section" style="display:none">
+      <div class="loader"></div>
+      <div class="loader-text">Building your strategy…</div>
+      <div class="loader-sub">This takes about 20–30 seconds</div>
+    </div>
+
+    <!-- Results -->
+    <div class="results-wrap" id="results-section">
+      <div class="results-header">
+        <div class="success-badge">✓ Strategy Ready</div>
+        <h1>Your Content Strategy</h1>
+        <p class="step-subtitle" style="margin-bottom:0">Here's your personalized plan. Download it as a PDF below.</p>
+      </div>
+      <div id="results-plan"></div>
+      <div class="plan-id" id="plan-id-display"></div>
+    </div>
+  </div>
+
+  <!-- Side tools -->
+  <div class="side-tools">
+    <a href="/bio" class="side-tool">BIO</a>
+    <a href="/audit" class="side-tool">AUDIT</a>
+  </div>
+
+  <script>
+    const API_BASE = '';
+
+    let currentStep = 1;
+    const totalSteps = 4;
+
+    // Collected data
+    const formData = {
+      stage_name: '', genre: '', subgenre: '', career_stage: '',
+      platforms: [], promoting: '', model_artists: '', challenge: ''
+    };
+
+    function togglePill(value, el) {
+      const cb = el.querySelector('input');
+      cb.checked = !cb.checked;
+      if (cb.checked) {
+        el.classList.add('selected');
+        if (!formData.platforms.includes(value)) formData.platforms.push(value);
+      } else {
+        el.classList.remove('selected');
+        formData.platforms = formData.platforms.filter(p => p !== value);
+      }
+    }
+
+    function updateProgress(step) {
+      const pct = Math.round((step / totalSteps) * 100);
+      document.getElementById('progress-step-label').textContent = `Step ${step} of ${totalSteps}`;
+      document.getElementById('progress-percent').textContent = pct + '%';
+      document.getElementById('progress-fill').style.width = pct + '%';
+      for (let i = 1; i <= totalSteps; i++) {
+        const dot = document.getElementById('dot-' + i);
+        dot.className = 'step-dot' + (i < step ? ' done' : (i === step ? ' active' : ''));
+      }
+    }
+
+    function showStep(from, to) {
+      document.getElementById('step-' + from).classList.remove('active');
+      document.getElementById('step-' + to).classList.add('active');
+      currentStep = to;
+      updateProgress(to);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showError(step, msg) {
+      const el = document.getElementById('err-' + step);
+      el.textContent = msg;
+      el.classList.add('show');
+    }
+
+    function clearError(step) {
+      document.getElementById('err-' + step).classList.remove('show');
+    }
+
+    function nextStep(step) {
+      clearError(step);
+
+      if (step === 1) {
+        const name = document.getElementById('s1-name').value.trim();
+        const genre = document.getElementById('s1-genre').value;
+        const stage = document.getElementById('s1-stage').value;
+        if (!name) { showError(1, 'Please enter your stage name.'); return; }
+        if (!genre) { showError(1, 'Please select a genre.'); return; }
+        if (!stage) { showError(1, 'Please select your career stage.'); return; }
+        formData.stage_name = name;
+        formData.genre = genre;
+        formData.subgenre = document.getElementById('s1-subgenre').value.trim();
+        formData.career_stage = stage;
+        showStep(1, 2);
+      }
+
+      else if (step === 2) {
+        if (formData.platforms.length === 0) { showError(2, 'Please select at least one platform.'); return; }
+        formData.promoting = document.getElementById('s2-promoting').value.trim();
+        if (!formData.promoting) { showError(2, 'Please describe what you\'re promoting.'); return; }
+        showStep(2, 3);
+      }
+
+      else if (step === 3) {
+        formData.model_artists = document.getElementById('s3-models').value.trim();
+        formData.challenge = document.getElementById('s3-challenge').value.trim();
+        populateReview();
+        showStep(3, 4);
+      }
+    }
+
+    function prevStep(step) {
+      clearError(step);
+      showStep(step, step - 1);
+    }
+
+    function populateReview() {
+      const card = document.getElementById('review-card');
+      const platformIcons = { instagram: '📸', tiktok: '🎵', youtube: '▶️', twitter: '🐦' };
+      const row = (key, label, val) => `
+        <div class="review-item">
+          <div class="review-key">${label}</div>
+          <div class="review-val ${val ? '' : 'empty'}">${val || 'Not specified'}</div>
+        </div>`;
+      card.innerHTML = `
+        ${row('name', 'Stage Name', formData.stage_name)}
+        ${row('genre', 'Genre', formData.genre)}
+        ${formData.subgenre ? row('subgenre', 'Sub-genre', formData.subgenre) : ''}
+        ${row('stage', 'Career Stage', formData.career_stage)}
+        ${row('platforms', 'Platforms', formData.platforms.map(p => platformIcons[p] + ' ' + p).join(', '))}
+        ${row('promoting', 'Promoting', formData.promoting)}
+        ${formData.model_artists ? row('models', 'Inspired By', formData.model_artists) : ''}
+        ${formData.challenge ? row('challenge', 'Challenge', formData.challenge) : ''}
+      `;
+    }
+
+    async function submitStrategy() {
+      clearError(4);
+      document.getElementById('step-4').classList.remove('active');
+      document.getElementById('progress-wrap').style.display = 'none';
+      document.getElementById('loading-section').style.display = 'block';
+
+      try {
+        const res = await fetch(API_BASE + '/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.detail || 'Generation failed');
+        }
+        const data = await res.json();
+        showResults(data.plan_id);
+      } catch (err) {
+        document.getElementById('loading-section').style.display = 'none';
+        document.getElementById('step-4').classList.add('active');
+        document.getElementById('progress-wrap').style.display = 'block';
+        showError(4, err.message);
+      }
+    }
+
+    function showResults(planId) {
+      document.getElementById('loading-section').style.display = 'none';
+      document.getElementById('results-section').classList.add('show');
+
+      const planData = {
+        plan_id: planId,
+        artist: formData.stage_name,
+        genre: formData.genre,
+        platforms: formData.platforms,
+        promoting: formData.promoting
+      };
+
+      document.getElementById('results-plan').innerHTML = `
+        <div class="card">
+          <div class="review-item">
+            <div class="review-key">Plan ID</div>
+            <div class="review-val">${planId}</div>
+          </div>
+          <div class="review-item">
+            <div class="review-key">Artist</div>
+            <div class="review-val">${formData.stage_name}</div>
+          </div>
+          <div class="review-item">
+            <div class="review-key">Genre</div>
+            <div class="review-val">${formData.genre}</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-top:20px">
+          <a href="/#plan-section" onclick="alert('Your strategy will appear in the main app. Returning home.')" class="btn-primary" style="text-align:center;text-decoration:none;display:block">View Full Strategy</a>
+          <button class="btn-next" onclick="window.location.href='/'" style="background:#1F2937;color:#9CA3AF;font-weight:600">Start Over</button>
+        </div>
+      `;
+      document.getElementById('plan-id-display').textContent = 'Plan ID: ' + planId;
+    }
+  </script>
+</body>
+</html>
