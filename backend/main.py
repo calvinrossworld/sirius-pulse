@@ -1,4 +1,4 @@
-"""Sirius Pulse — FastAPI backend."""
+"""Sirius Pulse — FastAPI backend with Supabase storage."""
 import os
 import json
 import uuid
@@ -13,8 +13,9 @@ from typing import Optional
 
 from generator import generate_plan
 from pdf_builder import build_pdf
+from storage import save_plan, get_plan, update_plan_pdf_url
 
-app = FastAPI(title="Sirius Pulse API", version="1.0")
+app = FastAPI(title="Sirius Pulse API", version="1.2")
 
 # Serve frontend static files
 BASE_DIR = Path(__file__).parent
@@ -31,21 +32,9 @@ app.add_middleware(
 
 PDF_DIR = BASE_DIR / "pdfs"
 PDF_DIR.mkdir(exist_ok=True)
-PLANS_DIR = BASE_DIR / "plans"
 
-
-def save_plan(data: dict) -> str:
-    plan_id = str(uuid.uuid4())[:8]
-    path = PLANS_DIR / f"{plan_id}.json"
-    path.write_text(json.dumps(data, indent=2))
-    return plan_id
-
-
-def get_plan(plan_id: str) -> dict | None:
-    path = PLANS_DIR / f"{plan_id}.json"
-    if not path.exists():
-        return None
-    return json.loads(path.read_text())
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
+SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "")
 
 
 class GenerateRequest(BaseModel):
@@ -92,6 +81,23 @@ async def download_plan(plan_id: str = PathParam(..., description="Plan ID")):
         build_pdf(plan["plan"], artist_name, str(pdf_path))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"PDF error: {str(e)}")
+
+    # Upload PDF to Supabase Storage
+    pdf_url = None
+    if SUPABASE_URL and SUPABASE_KEY:
+        try:
+            from supabase import create_client
+            supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+            with open(pdf_path, "rb") as f:
+                supabase.storage.from_("pdfs").upload(
+                    f"{plan_id}.pdf", f,
+                    file_options={"content-type": "application/pdf"}
+                )
+            pdf_url = f"{SUPABASE_URL}/storage/v1/object/public/pdfs/{plan_id}.pdf"
+            update_plan_pdf_url(plan_id, pdf_url)
+        except Exception as e:
+            # Log but don't fail — still serve the file locally
+            print(f"PDF upload failed: {e}")
 
     return FileResponse(
         pdf_path,
