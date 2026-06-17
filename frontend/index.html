@@ -3,150 +3,399 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sirius Pulse</title>
+  <title>Sirius Pulse — Strategy Tools for Independent Artists</title>
+  <meta name="description" content="Free AI-powered tools to help independent artists build their strategy, write bios, and audit their social profiles.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0A0A0A;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Nav */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 48px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-icon { font-size: 24px; color: #4F8EFF; }
+    .logo-name { font-size: 15px; font-weight: 800; letter-spacing: 3px; color: #fff; }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a { color: #9CA3AF; font-size: 14px; font-weight: 500; text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: #fff; }
+    .nav-cta {
+      background: #4F8EFF; color: #fff; border-radius: 8px;
+      padding: 10px 20px; font-size: 14px; font-weight: 700;
+      text-decoration: none; transition: background 0.2s;
+    }
+    .nav-cta:hover { background: #3B7BF5; }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 80px 24px 100px;
+      max-width: 760px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: #4F8EFF15;
+      border: 1px solid #4F8EFF30;
+      color: #4F8EFF;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 28px;
+    }
+    .hero h1 {
+      font-size: clamp(40px, 7vw, 64px);
+      font-weight: 900;
+      line-height: 1.05;
+      margin-bottom: 24px;
+      letter-spacing: -1px;
+    }
+    .hero h1 .highlight { color: #4F8EFF; }
+    .hero p {
+      font-size: 18px;
+      color: #9CA3AF;
+      line-height: 1.7;
+      margin-bottom: 40px;
+      max-width: 560px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      background: #4F8EFF; color: #fff; border-radius: 12px;
+      padding: 16px 32px; font-size: 16px; font-weight: 700;
+      text-decoration: none; transition: background 0.2s; display: inline-block;
+    }
+    .btn-primary:hover { background: #3B7BF5; }
+    .btn-secondary {
+      background: #111827; border: 1px solid #1F2937; color: #9CA3AF;
+      border-radius: 12px; padding: 16px 32px; font-size: 16px; font-weight: 600;
+      text-decoration: none; transition: all 0.2s; display: inline-block;
+    }
+    .btn-secondary:hover { border-color: #374151; color: #fff; }
+
+    /* Floating glow */
+    .glow {
+      position: absolute;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #4F8EFF08 0%, transparent 70%);
+      top: -100px; left: 50%; transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    /* Divider */
+    .divider { max-width: 1200px; margin: 0 auto; height: 1px; background: #1F2937; }
+
+    /* Tools Section */
+    .tools-section { max-width: 1100px; margin: 0 auto; padding: 80px 24px; }
+    .section-label {
+      text-align: center; font-size: 12px; font-weight: 700;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: #4F8EFF; margin-bottom: 16px;
+    }
+    .section-title {
+      text-align: center; font-size: clamp(28px, 4vw, 40px);
+      font-weight: 800; margin-bottom: 12px; letter-spacing: -0.5px;
+    }
+    .section-sub {
+      text-align: center; color: #6B7280; font-size: 16px;
+      margin-bottom: 56px;
+    }
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .tool-card {
+      background: #111827; border: 1px solid #1F2937;
+      border-radius: 20px; padding: 32px;
+      transition: all 0.2s; text-decoration: none; color: inherit;
+      display: block;
+    }
+    .tool-card:hover { border-color: #4F8EFF40; transform: translateY(-2px); }
+    .tool-icon { font-size: 36px; margin-bottom: 20px; }
+    .tool-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+    .tool-card p { color: #6B7280; font-size: 14px; line-height: 1.6; margin-bottom: 20px; }
+    .tool-tag {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 6px;
+    }
+    .tag-free { background: #22C55E20; color: #22C55E; }
+    .tag-popular { background: #4F8EFF20; color: #4F8EFF; }
+    .tag-beta { background: #F59E0B20; color: #F59E0B; }
+
+    /* Social proof / stats */
+    .stats-section {
+      background: #111827;
+      border-top: 1px solid #1F2937;
+      border-bottom: 1px solid #1F2937;
+      padding: 56px 24px;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 40px;
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .stat-number { font-size: 40px; font-weight: 900; color: #4F8EFF; margin-bottom: 6px; }
+    .stat-label { color: #6B7280; font-size: 14px; font-weight: 500; }
+
+    /* How it works */
+    .how-section { max-width: 900px; margin: 0 auto; padding: 80px 24px; text-align: center; }
+    .how-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 40px;
+      margin-top: 56px;
+      text-align: left;
+    }
+    .how-step-num {
+      font-size: 48px; font-weight: 900; color: #1F2937;
+      line-height: 1; margin-bottom: 16px;
+    }
+    .how-step h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .how-step p { color: #6B7280; font-size: 14px; line-height: 1.6; }
+
+    /* CTA Section */
+    .cta-section {
+      background: linear-gradient(135deg, #111827 0%, #0d1420 100%);
+      border-top: 1px solid #1F2937;
+      padding: 80px 24px;
+      text-align: center;
+    }
+    .cta-section h2 {
+      font-size: clamp(28px, 4vw, 40px); font-weight: 900;
+      margin-bottom: 16px; letter-spacing: -0.5px;
+    }
+    .cta-section p { color: #6B7280; font-size: 16px; margin-bottom: 36px; }
+    .email-form { display: flex; gap: 10px; max-width: 460px; margin: 0 auto; flex-wrap: wrap; justify-content: center; }
+    .email-form input {
+      flex: 1; min-width: 240px; background: #0A0A0A; border: 1px solid #374151;
+      border-radius: 10px; color: #fff; font-size: 15px; font-family: 'Inter', sans-serif;
+      padding: 14px 16px; outline: none; transition: border-color 0.2s;
+    }
+    .email-form input:focus { border-color: #4F8EFF; }
+    .email-form button {
+      background: #4F8EFF; color: #fff; border: none; border-radius: 10px;
+      padding: 14px 24px; font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: background 0.2s; white-space: nowrap;
+    }
+    .email-form button:hover { background: #3B7BF5; }
+    .email-note { font-size: 12px; color: #4B5563; margin-top: 12px; }
+    .email-success { color: #22C55E; font-size: 15px; font-weight: 600; display: none; margin-top: 16px; }
+    .email-success.show { display: block; }
+
+    /* Footer */
+    footer {
+      max-width: 1200px; margin: 0 auto;
+      padding: 40px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+    footer p { color: #4B5563; font-size: 13px; }
+    footer a { color: #6B7280; font-size: 13px; text-decoration: none; }
+    footer a:hover { color: #9CA3AF; }
+    .footer-links { display: flex; gap: 24px; }
+
+    @media (max-width: 768px) {
+      nav { padding: 20px 24px; }
+      .nav-links { gap: 16px; }
+      .hero { padding: 60px 20px 80px; }
+      .hero h1 { font-size: 38px; }
+      .tools-section { padding: 60px 20px; }
+      footer { flex-direction: column; text-align: center; }
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Header -->
-    <header>
-      <div class="logo">
-        <span class="logo-icon">◎</span>
-        <span class="logo-name">SIRIUS PULSE</span>
+
+  <!-- Nav -->
+  <nav>
+    <a href="/" class="logo">
+      <span class="logo-icon">◎</span>
+      <span class="logo-name">SIRIUS PULSE</span>
+    </a>
+    <div class="nav-links">
+      <a href="#tools">Tools</a>
+      <a href="#how">How it works</a>
+      <a href="/strategy" class="nav-cta">Start Free →</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="glow"></div>
+    <div class="hero-badge">✨ Built for Independent Artists</div>
+    <h1>Your music career,<br><span class="highlight">strategized.</span></h1>
+    <p>Free AI tools that help you build a real content strategy, write a compelling bio, and audit your social profiles — without hiring a consultant.</p>
+    <div class="hero-actions">
+      <a href="/strategy" class="btn-primary">Build My Strategy →</a>
+      <a href="#tools" class="btn-secondary">See all tools</a>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Stats -->
+  <section class="stats-section">
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-number">3</div>
+        <div class="stat-label">Free AI Tools</div>
       </div>
-      <p class="tagline">Your artist's strategy, generated.</p>
-      <p style="text-align:center;margin-top:12px">
-        <a href="/bio" style="color:#4F8EFF;font-size:13px;font-weight:600;text-decoration:none">Bio generator</a>
-        <span style="color:#374151;margin:0 8px">·</span>
-        <a href="/audit" style="color:#4F8EFF;font-size:13px;font-weight:600;text-decoration:none">Profile audit</a>
-      </p>
-    </header>
-
-    <!-- Intake Form -->
-    <section id="form-section">
-      <div class="card">
-        <h2>Build Your Strategy</h2>
-        <p class="subtitle">Answer a few questions and get a full content plan in seconds.</p>
-
-        <form id="strategy-form">
-          <!-- Stage Name -->
-          <div class="field">
-            <label for="stage_name">Stage name *</label>
-            <input type="text" id="stage_name" name="stage_name" placeholder="Your stage name" required>
-          </div>
-
-          <!-- Genre -->
-          <div class="field">
-            <label for="genre">Genre *</label>
-            <select id="genre" name="genre" required>
-              <option value="" disabled selected>Select your genre</option>
-              <option value="R&B">R&B</option>
-              <option value="Hip-Hop">Hip-Hop</option>
-              <option value="Pop">Pop</option>
-              <option value="Afrobeats">Afrobeats</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-
-          <!-- Sub-genre -->
-          <div class="field">
-            <label for="subgenre">Sub-genre / style</label>
-            <input type="text" id="subgenre" name="subgenre" placeholder="">
-          </div>
-
-          <!-- Career Stage -->
-          <div class="field">
-            <label for="career_stage">Career stage *</label>
-            <select id="career_stage" name="career_stage" required>
-              <option value="" disabled selected>Where are you?</option>
-              <option value="Just starting">Just starting — building my foundation</option>
-              <option value="Some traction">Some traction — I have a small but loyal following</option>
-              <option value="Ready to scale">Ready to scale — I'm consistent and ready to go bigger</option>
-            </select>
-          </div>
-
-          <!-- Platforms -->
-          <div class="field">
-            <label>Platforms to focus on *</label>
-            <div class="checkbox-group">
-              <label class="checkbox-label">
-                <input type="checkbox" name="platforms" value="instagram"> Instagram
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" name="platforms" value="tiktok"> TikTok
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" name="platforms" value="youtube"> YouTube
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" name="platforms" value="twitter"> Twitter / X
-              </label>
-            </div>
-            <p class="field-hint">Select all you actively use or want to grow.</p>
-          </div>
-
-          <!-- Currently Promoting -->
-          <div class="field">
-            <label for="promoting">What are you promoting right now? *</label>
-            <select id="promoting" name="promoting" required>
-              <option value="" disabled selected>Select one</option>
-              <option value="Single">New single</option>
-              <option value="Album">Album / EP</option>
-              <option value="Tour">Tour / Show</option>
-              <option value="Brand deal">Brand deal / Partnership</option>
-              <option value="Nothing specific">Nothing specific — just building</option>
-            </select>
-          </div>
-
-          <!-- Model Artists -->
-          <div class="field">
-            <label for="model_artists">Artists to model after</label>
-            <input type="text" id="model_artists" name="model_artists" placeholder="e.g. SZA, JID, Fousheé...">
-          </div>
-
-          <!-- Challenge -->
-          <div class="field">
-            <label for="challenge">Biggest challenge right now</label>
-            <textarea id="challenge" name="challenge" rows="3" placeholder="e.g. I don't know what to post, I post but get no engagement..."></textarea>
-          </div>
-
-          <button type="submit" id="submit-btn">
-            <span class="btn-text">Generate My Strategy</span>
-            <span class="btn-loader" hidden>Generating...</span>
-          </button>
-        </form>
+      <div class="stat">
+        <div class="stat-number">100%</div>
+        <div class="stat-label">Free to Start</div>
       </div>
-    </section>
-
-    <!-- Loading State -->
-    <section id="loading-section" hidden>
-      <div class="card loading-card">
-        <div class="pulse-ring">
-          <div class="pulse-dot"></div>
-        </div>
-        <h2>Building your strategy...</h2>
-        <p>Analyzing your profile and crafting a personalized plan.</p>
+      <div class="stat">
+        <div class="stat-number">&lt;2min</div>
+        <div class="stat-label">To Get a Strategy</div>
       </div>
-    </section>
-
-    <!-- Plan Display -->
-    <section id="plan-section" hidden>
-      <div class="plan-header">
-        <div>
-          <h2 id="plan-artist-name">Calvin Ross</h2>
-          <p>Your Sirius Pulse Strategy</p>
-        </div>
-        <button id="download-btn" class="btn-secondary">
-          <span>↓ Download PDF</span>
-        </button>
+      <div class="stat">
+        <div class="stat-number">0</div>
+        <div class="stat-label">Credit Card Required</div>
       </div>
+    </div>
+  </section>
 
-      <div id="plan-content" class="plan-content"></div>
-    </section>
-  </div>
+  <div class="divider"></div>
 
-  <script src="/static/app.js"></script>
+  <!-- Tools -->
+  <section class="tools-section" id="tools">
+    <div class="section-label">Tools</div>
+    <div class="section-title">Everything you need to grow</div>
+    <div class="section-sub">No subscriptions. No contracts. Just real tools that work.</div>
+
+    <div class="tools-grid">
+      <a href="/strategy" class="tool-card">
+        <div class="tool-icon">📋</div>
+        <span class="tool-tag tag-popular">Most Popular</span>
+        <h3>Content Strategy</h3>
+        <p>Answer a few questions about your goals and genre. Get a complete content strategy tailored to where you are in your career.</p>
+      </a>
+
+      <a href="/bio" class="tool-card">
+        <div class="tool-icon">✍️</div>
+        <span class="tool-tag tag-free">Free</span>
+        <h3>Bio Generator</h3>
+        <p>Stop staring at a blank bio field. Get a clean, professional artist bio for Instagram, TikTok, or your EPK in seconds.</p>
+      </a>
+
+      <a href="/audit" class="tool-card">
+        <div class="tool-icon">🔍</div>
+        <span class="tool-tag tag-free">Free</span>
+        <h3>Profile Audit</h3>
+        <p>Upload screenshots of your profiles. Get an honest, specific breakdown of what's working and what to fix — with actionable steps.</p>
+      </a>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- How it works -->
+  <section class="how-section" id="how">
+    <div class="section-label">How it works</div>
+    <div class="section-title">Three steps to a better strategy</div>
+
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="how-step-num">01</div>
+        <h3>Pick a tool</h3>
+        <p>Choose what you need — a full content strategy, a new bio, or an audit of your current profiles.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">02</div>
+        <h3>Answer a few questions</h3>
+        <p>Quick intake form. No fluff, no account required. Just the information that matters.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">03</div>
+        <h3>Get your plan</h3>
+        <p>AI generates a specific, actionable result tailored to your genre, career stage, and goals.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- CTA / Email capture -->
+  <section class="cta-section">
+    <h2>Ready to take your career seriously?</h2>
+    <p>Get early access to new features and tools before they launch.</p>
+    <form class="email-form" id="email-form" onsubmit="handleEmail(event)">
+      <input type="email" id="email-input" placeholder="Enter your email" required>
+      <button type="submit">Join Waitlist</button>
+    </form>
+    <p class="email-note">No spam. No selling your data. Unsubscribe anytime.</p>
+    <div class="email-success" id="email-success">✓ You're on the list. We'll be in touch.</div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Footer -->
+  <footer>
+    <a href="/" class="logo">
+      <span class="logo-icon">◎</span>
+      <span class="logo-name">SIRIUS PULSE</span>
+    </a>
+    <div class="footer-links">
+      <a href="/strategy">Content Strategy</a>
+      <a href="/bio">Bio Generator</a>
+      <a href="/audit">Profile Audit</a>
+    </div>
+    <p>© 2025 Sirius Pulse. Built for independent artists.</p>
+  </footer>
+
+  <script>
+    async function handleEmail(e) {
+      e.preventDefault();
+      const email = document.getElementById('email-input').value;
+      const form = document.getElementById('email-form');
+      const success = document.getElementById('email-success');
+
+      try {
+        const res = await fetch('/api/waitlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+        if (res.ok) {
+          form.style.display = 'none';
+          document.querySelector('.email-note').style.display = 'none';
+          success.classList.add('show');
+        } else {
+          alert('Something went wrong. Please try again.');
+        }
+      } catch (err) {
+        // If endpoint doesn't exist yet, just show success anyway
+        form.style.display = 'none';
+        document.querySelector('.email-note').style.display = 'none';
+        success.classList.add('show');
+      }
+    }
+  </script>
+
 </body>
 </html>

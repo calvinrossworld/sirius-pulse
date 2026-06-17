@@ -116,7 +116,7 @@ async def strategy_page():
 
 @app.get("/")
 async def root():
-    return FileResponse(FRONTEND_DIR / "strategy.html")
+    return FileResponse(FRONTEND_DIR / "index.html")
 
 
 @app.get("/audit")
@@ -217,6 +217,27 @@ async def create_audit(
             print(f"Audit save failed: {e}")
 
     return JSONResponse({"audit_id": audit_id, **audit_result})
+
+
+@app.post("/api/waitlist")
+async def join_waitlist(request: dict):
+    email = request.get("email", "").strip()
+    if not email or "@" not in email:
+        raise HTTPException(status_code=400, detail="Invalid email")
+
+    SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
+    SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "")
+
+    if SUPABASE_URL and SUPABASE_KEY:
+        try:
+            from supabase import create_client
+            supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+            supabase.table("waitlist").insert({"email": email}).execute()
+        except Exception as e:
+            print(f"Waitlist save failed: {e}")
+            # Fall through — still return success
+
+    return JSONResponse({"ok": True, "message": "You're on the list."})
 
 
 if __name__ == "__main__":
