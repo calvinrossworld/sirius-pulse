@@ -71,6 +71,7 @@ def generate_plan(artist_data: dict) -> dict:
         ],
         max_tokens=6144,
         temperature=0.8,
+        response_format={"type": "json_object"},
         extra_body={"thinking": {"type": "disabled"}},
     )
 

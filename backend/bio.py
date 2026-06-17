@@ -84,6 +84,7 @@ def generate_bios(stage_name: str, genre: str, subgenre: str, career_stage: str,
         ],
         max_tokens=1024,
         temperature=0.85,
+        response_format={"type": "json_object"},
         extra_body={"thinking": {"type": "disabled"}},
     )
 

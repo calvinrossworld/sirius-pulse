@@ -79,6 +79,7 @@ def generate_hashtags(genre: str, subgenre: str, promoting: str, stage_name: str
         ],
         max_tokens=2048,
         temperature=0.8,
+        response_format={"type": "json_object"},
         extra_body={"thinking": {"type": "disabled"}},
     )
 
