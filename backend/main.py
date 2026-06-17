@@ -7,6 +7,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi import Path as PathParam
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import Optional
 
@@ -14,6 +15,11 @@ from generator import generate_plan
 from pdf_builder import build_pdf
 
 app = FastAPI(title="Sirius Pulse API", version="1.0")
+
+# Serve frontend static files
+BASE_DIR = Path(__file__).parent
+FRONTEND_DIR = BASE_DIR.parent / "frontend"
+app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 
 app.add_middleware(
     CORSMiddleware,
@@ -23,7 +29,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-BASE_DIR = Path(__file__).parent
 PDF_DIR = BASE_DIR / "pdfs"
 PDF_DIR.mkdir(exist_ok=True)
 PLANS_DIR = BASE_DIR / "plans"
@@ -93,6 +98,11 @@ async def download_plan(plan_id: str = PathParam(..., description="Plan ID")):
         media_type="application/pdf",
         filename=f"{artist_name}-SiriusPulse-Strategy.pdf",
     )
+
+
+@app.get("/")
+async def root():
+    return FileResponse(FRONTEND_DIR / "index.html")
 
 
 if __name__ == "__main__":
