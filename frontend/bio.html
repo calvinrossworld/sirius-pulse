@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artist Bio — Sirius Pulse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    body { background: #0A0A0A; color: #fff; font-family: 'Inter', sans-serif; min-height: 100vh; }
+    .container { max-width: 720px; margin: 0 auto; padding: 40px 20px; }
+    .logo-link { text-decoration: none; color: inherit; display: inline-block; margin-bottom: 36px; }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-icon { font-size: 24px; color: #4F8EFF; }
+    .logo-name { font-size: 16px; font-weight: 700; letter-spacing: 3px; }
+    h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+    .subtitle { color: #6B7280; font-size: 15px; margin-bottom: 36px; }
+    .card { background: #111827; border: 1px solid #1F2937; border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+    .field { margin-bottom: 20px; }
+    .field:last-child { margin-bottom: 0; }
+    label { display: block; font-size: 13px; font-weight: 600; color: #9CA3AF; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    input, select, textarea { width: 100%; background: #0A0A0A; border: 1px solid #374151; border-radius: 10px; color: #fff; font-size: 15px; font-family: 'Inter', sans-serif; padding: 12px 14px; box-sizing: border-box; outline: none; transition: border-color 0.2s; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color: #4F8EFF; }
+    .char-hint { font-size: 11px; color: #6B7280; margin-top: 4px; }
+    textarea { min-height: 80px; }
+    .btn-primary { background: #4F8EFF; color: #fff; border: none; border-radius: 12px; padding: 16px 32px; font-size: 16px; font-weight: 700; cursor: pointer; width: 100%; transition: background 0.2s; margin-top: 8px; }
+    .btn-primary:hover { background: #3B7BF5; }
+    .btn-primary:disabled { background: #374151; cursor: not-allowed; }
+    .loader-wrap { text-align: center; padding: 60px 20px; }
+    .loader { width: 48px; height: 48px; border: 4px solid #1F2937; border-top-color: #4F8EFF; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-text { color: #9CA3AF; font-size: 15px; }
+    .results-section { display: none; }
+    .results-section.show { display: block; }
+    .bio-card { background: #111827; border: 1px solid #1F2937; border-radius: 16px; padding: 28px; margin-bottom: 20px; }
+    .bio-label { font-size: 12px; font-weight: 700; color: #6B7280; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; }
+    .bio-text { font-size: 15px; color: #fff; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+    .bio-char-count { font-size: 11px; color: #6B7280; margin-top: 6px; }
+    .bio-char-count.over { color: #EF4444; }
+    .bio-char-count.ok { color: #22C55E; }
+    .copy-btn { background: #1F2937; border: 1px solid #374151; color: #9CA3AF; font-size: 13px; padding: 8px 16px; border-radius: 8px; cursor: pointer; margin-top: 12px; transition: all 0.2s; }
+    .copy-btn:hover { border-color: #4F8EFF; color: #4F8EFF; }
+    .copy-btn.copied { border-color: #22C55E; color: #22C55E; }
+    .variants-grid { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; }
+    .variant-card { background: #0A0A0A; border: 1px solid #1F2937; border-radius: 12px; padding: 20px; }
+    .variant-label { font-size: 11px; font-weight: 700; color: #4F8EFF; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .variant-bio { font-size: 14px; color: #D1D5DB; line-height: 1.6; white-space: pre-wrap; }
+    .variant-copy { background: none; border: 1px solid #374151; color: #6B7280; font-size: 12px; padding: 5px 12px; border-radius: 6px; cursor: pointer; margin-top: 10px; transition: all 0.2s; }
+    .variant-copy:hover { border-color: #4F8EFF; color: #4F8EFF; }
+    .error-msg { background: #EF444420; border: 1px solid #EF444440; border-radius: 10px; padding: 16px; color: #FCA5A5; font-size: 14px; margin-top: 16px; display: none; }
+    .error-msg.show { display: block; }
+    .back-link { display: inline-block; margin-bottom: 24px; color: #6B7280; font-size: 14px; text-decoration: none; }
+    .back-link:hover { color: #9CA3AF; }
+    .cta-footer { text-align: center; margin-top: 32px; padding-top: 24px; border-top: 1px solid #1F2937; }
+    .cta-footer p { color: #6B7280; font-size: 14px; margin-bottom: 16px; }
+    .btn-secondary { display: inline-block; background: #111827; border: 1px solid #4F8EFF; color: #4F8EFF; border-radius: 12px; padding: 14px 28px; font-size: 15px; font-weight: 600; text-decoration: none; transition: all 0.2s; }
+    .btn-secondary:hover { background: #4F8EFF10; }
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #1F2937; }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-label { font-size: 14px; color: #9CA3AF; }
+    .toggle { position: relative; width: 44px; height: 24px; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; inset: 0; background: #374151; border-radius: 24px; cursor: pointer; transition: background 0.2s; }
+    .toggle-slider::before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: transform 0.2s; }
+    .toggle input:checked + .toggle-slider { background: #4F8EFF; }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
+    .hashtag-note { font-size: 12px; color: #6B7280; background: #0A0A0A; border-radius: 8px; padding: 12px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="logo-link">
+      <div class="logo">
+        <span class="logo-icon">◎</span>
+        <span class="logo-name">SIRIUS PULSE</span>
+      </div>
+    </a>
+
+    <div id="input-form">
+      <h1>Artist Bio Generator</h1>
+      <p class="subtitle">Get a clean, professional artist bio for your Instagram, TikTok, or EPK.</p>
+
+      <div class="card">
+        <div class="field">
+          <label>Stage Name</label>
+          <input type="text" id="stage_name" placeholder="Your artist name">
+        </div>
+
+        <div class="field">
+          <label>Genre</label>
+          <select id="genre">
+            <option value="" disabled selected>Select genre</option>
+            <option>R&B</option>
+            <option>Hip-Hop</option>
+            <option>Pop</option>
+            <option>Afrobeats</option>
+            <option>Neo-Soul</option>
+            <option>Alt R&B</option>
+            <option>Trap</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Sub-genre / Style</label>
+          <input type="text" id="subgenre" placeholder="e.g. dark R&B, moody, drill-adjacent">
+        </div>
+
+        <div class="field">
+          <label>Career Stage</label>
+          <select id="career_stage">
+            <option value="" disabled selected>Select one</option>
+            <option>Just starting</option>
+            <option>Some traction</option>
+            <option>Ready to scale</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Bio Vibe</label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;background:#0A0A0A;border:1px solid #374151;border-radius:8px;padding:7px 12px;font-size:13px;text-transform:none;letter-spacing:0;color:#9CA3AF;transition:all 0.2s" id="vibe-mysterious">
+              <input type="checkbox" value="mysterious" onchange="toggleVibe(this)" style="width:auto"> Mysterious
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;background:#0A0A0A;border:1px solid #374151;border-radius:8px;padding:7px 12px;font-size:13px;text-transform:none;letter-spacing:0;color:#9CA3AF;transition:all 0.2s" id="vibe-confident">
+              <input type="checkbox" value="confident" onchange="toggleVibe(this)" style="width:auto"> Confident
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;background:#0A0A0A;border:1px solid #374151;border-radius:8px;padding:7px 12px;font-size:13px;text-transform:none;letter-spacing:0;color:#9CA3AF;transition:all 0.2s" id="vibe-relatable">
+              <input type="checkbox" value="relatable" onchange="toggleVibe(this)" style="width:auto"> Relatable
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;background:#0A0A0A;border:1px solid #374151;border-radius:8px;padding:7px 12px;font-size:13px;text-transform:none;letter-spacing:0;color:#9CA3AF;transition:all 0.2s" id="vibe-elite">
+              <input type="checkbox" value="elite" onchange="toggleVibe(this)" style="width:auto"> Elite
+            </label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>About Them <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#6B7280;font-size:12px">(optional)</span></label>
+          <textarea id="about" placeholder="Anything you want the bio to reference — a story, a vibe, where they're from, a recent achievement, etc."></textarea>
+        </div>
+
+        <div class="field">
+          <label>Target Platform</label>
+          <select id="platform">
+            <option value="instagram">Instagram Bio (150 chars)</option>
+            <option value="tiktok">TikTok Bio (80 chars)</option>
+            <option value="epk">EPK / Press Kit (2-3 sentences)</option>
+          </select>
+          <div class="hashtag-note">Instagram caps at 150 chars, TikTok at 80. Select your main platform.</div>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="generate-btn" onclick="generateBio()">
+        Generate Bio
+      </button>
+      <div class="error-msg" id="error-msg"></div>
+    </div>
+
+    <div class="loader-wrap" id="loading-section" style="display:none">
+      <div class="loader"></div>
+      <div class="loader-text">Writing your bio…</div>
+    </div>
+
+    <div class="results-section" id="results-section">
+      <a href="/bio" class="back-link" onclick="resetForm(); return false">← Generate another</a>
+      <h1>Your Artist Bio</h1>
+      <p class="subtitle" id="results-meta"></p>
+
+      <div class="bio-card">
+        <div class="bio-label" id="primary-label"></div>
+        <div class="bio-text" id="primary-bio"></div>
+        <div class="bio-char-count" id="primary-char-count"></div>
+        <button class="copy-btn" id="primary-copy" onclick="copyBio('primary')">Copy bio</button>
+      </div>
+
+      <div class="variants-grid" id="variants-grid"></div>
+
+      <div class="cta-footer">
+        <p>Build a full content strategy for your next release?</p>
+        <a href="/" class="btn-secondary">Build My Strategy →</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = '';
+
+    let activeVibes = [];
+
+    function toggleVibe(cb) {
+      const label = cb.closest('label');
+      if (cb.checked) {
+        label.style.borderColor = '#4F8EFF';
+        label.style.color = '#4F8EFF';
+        activeVibes.push(cb.value);
+      } else {
+        label.style.borderColor = '#374151';
+        label.style.color = '#9CA3AF';
+        activeVibes = activeVibes.filter(v => v !== cb.value);
+      }
+    }
+
+    async function generateBio() {
+      const stageName = document.getElementById('stage_name').value.trim();
+      const genre = document.getElementById('genre').value;
+      const subgenre = document.getElementById('subgenre').value.trim();
+      const careerStage = document.getElementById('career_stage').value;
+      const about = document.getElementById('about').value.trim();
+      const platform = document.getElementById('platform').value;
+
+      if (!stageName) { showError('Please enter your stage name.'); return; }
+      if (!genre) { showError('Please select a genre.'); return; }
+      if (!careerStage) { showError('Please select a career stage.'); return; }
+
+      document.getElementById('input-form').style.display = 'none';
+      document.getElementById('loading-section').style.display = 'block';
+      document.getElementById('error-msg').classList.remove('show');
+
+      try {
+        const res = await fetch(API_BASE + '/bio', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stage_name: stageName, genre, subgenre, career_stage: careerStage, vibes: activeVibes, about, platform }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.detail || 'Generation failed');
+        }
+        const data = await res.json();
+        showResults(data, platform);
+      } catch (err) {
+        document.getElementById('input-form').style.display = 'block';
+        document.getElementById('loading-section').style.display = 'none';
+        showError(err.message);
+      }
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('error-msg');
+      el.textContent = msg;
+      el.classList.add('show');
+    }
+
+    function charCount(text, platform) {
+      const limits = { instagram: 150, tiktok: 80, ekp: 500 };
+      const limit = limits[platform] || 500;
+      return { count: text.length, limit, ok: text.length <= limit, over: text.length > limit };
+    }
+
+    async function copyBio(id) {
+      const text = id === 'primary'
+        ? document.getElementById('primary-bio').textContent
+        : document.getElementById('variant-' + id).querySelector('.variant-bio').textContent;
+      try {
+        await navigator.clipboard.writeText(text);
+        const btn = id === 'primary' ? document.getElementById('primary-copy') : document.querySelector('#variant-' + id + ' .variant-copy');
+        btn.textContent = '✓ Copied';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy bio';
+          btn.classList.remove('copied');
+        }, 2000);
+      } catch(e) {}
+    }
+
+    function showResults(data, platform) {
+      document.getElementById('loading-section').style.display = 'none';
+      document.getElementById('results-section').classList.add('show');
+
+      const platformLabels = { instagram: 'Instagram Bio', tiktok: 'TikTok Bio', ekp: 'EPK Bio' };
+      const platformLimits = { instagram: 150, tiktok: 80, ekp: 500 };
+
+      const primary = data.bios[0];
+      const cc = charCount(primary, platform);
+
+      document.getElementById('results-meta').textContent = platformLabels[platform] || 'Bio';
+      document.getElementById('primary-label').textContent = 'Main Bio';
+      document.getElementById('primary-bio').textContent = primary;
+      const countEl = document.getElementById('primary-char-count');
+      countEl.textContent = `${cc.count} / ${cc.limit} characters${cc.over ? ' ⚠️ over limit!' : ' ✓'}`;
+      countEl.className = 'bio-char-count ' + (cc.ok ? 'ok' : 'over');
+
+      const variantsGrid = document.getElementById('variants-grid');
+      variantsGrid.innerHTML = '';
+      data.bios.slice(1).forEach((bio, i) => {
+        const variantCc = charCount(bio, platform);
+        const variantId = 'v' + i;
+        variantsGrid.innerHTML += `
+          <div class="variant-card" id="variant-${variantId}">
+            <div class="variant-label">Alternative ${i + 2}</div>
+            <div class="variant-bio">${bio}</div>
+            <div class="bio-char-count" style="font-size:11px;color:${variantCc.ok ? '#22C55E' : '#EF4444'};margin-top:6px">${variantCc.count} / ${variantCc.limit} chars</div>
+            <button class="variant-copy" onclick="copyBio('${variantId}')">Copy bio</button>
+          </div>
+        `;
+      });
+    }
+
+    function resetForm() {
+      activeVibes = [];
+      document.querySelectorAll('.vibe-checkboxes input').forEach(c => c.checked = false);
+      document.getElementById('results-section').classList.remove('show');
+      document.getElementById('input-form').style.display = 'block';
+      document.getElementById('error-msg').classList.remove('show');
+    }
+  </script>
+</body>
+</html>

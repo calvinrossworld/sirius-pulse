@@ -17,6 +17,7 @@ from pdf_builder import build_pdf
 from storage import save_plan, get_plan, update_plan_pdf_url
 from auditor import audit_profiles
 from hashtags import generate_hashtags
+from bio import generate_bios
 
 app = FastAPI(title="Sirius Pulse API", version="1.2")
 
@@ -122,6 +123,38 @@ async def audit_page():
 @app.get("/hashtags")
 async def hashtags_page():
     return FileResponse(FRONTEND_DIR / "hashtags.html")
+
+
+@app.get("/bio")
+async def bio_page():
+    return FileResponse(FRONTEND_DIR / "bio.html")
+
+
+class BioRequest(BaseModel):
+    stage_name: str
+    genre: str
+    subgenre: Optional[str] = ""
+    career_stage: str
+    vibes: list[str] = []
+    about: Optional[str] = ""
+    platform: str = "instagram"
+
+
+@app.post("/bio")
+async def create_bio(request: BioRequest):
+    try:
+        bios = generate_bios(
+            stage_name=request.stage_name,
+            genre=request.genre,
+            subgenre=request.subgenre,
+            career_stage=request.career_stage,
+            vibes=request.vibes,
+            about=request.about,
+            platform=request.platform,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    return JSONResponse({"bios": bios})
 
 
 class HashtagRequest(BaseModel):
