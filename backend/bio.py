@@ -82,30 +82,41 @@ def generate_bios(stage_name: str, genre: str, subgenre: str, career_stage: str,
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_prompt},
         ],
-        max_tokens=2048,
+        max_tokens=3072,
         temperature=0.85,
         extra_body={"thinking": {"type": "disabled"}},
     )
 
     raw = response.choices[0].message.content.strip()
+
+    # Try to extract JSON from markdown code blocks
     if raw.startswith("```"):
         raw = raw.split("```")[1]
         if raw.startswith("json"):
             raw = raw[4:]
         raw = raw.strip()
 
+    # Try direct JSON parse
     try:
         parsed = json.loads(raw)
         if isinstance(parsed, list):
             return parsed
         return [parsed]
     except json.JSONDecodeError:
-        # Try to extract array
-        import re
-        match = re.search(r'\[.*\]', raw, re.DOTALL)
-        if match:
-            try:
-                return json.loads(match.group())
-            except Exception:
-                pass
-        raise ValueError(f"Could not parse bio response: {raw[:200]}")
+        pass
+
+    # Try to extract array from raw text
+    import re
+    match = re.search(r'\[.*\]', raw, re.DOTALL)
+    if match:
+        try:
+            return json.loads(match.group())
+        except Exception:
+            pass
+
+    # If raw text looks like plain bios (not JSON), split by newlines or double newlines
+    lines = [l.strip() for l in raw.replace('"', '').split('\n') if l.strip() and len(l.strip()) > 10]
+    if lines:
+        return lines[:3]
+
+    raise ValueError(f"Bio generation failed. Raw output: {raw[:300]}")
