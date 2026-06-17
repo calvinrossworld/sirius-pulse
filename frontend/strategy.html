@@ -292,6 +292,22 @@
       <div class="loader-sub">This takes about 20–30 seconds</div>
     </div>
 
+
+    <!-- Email capture -->
+    <div class="loader-wrap" id="email-section" style="display:none">
+      <div style="max-width:480px;margin:0 auto;text-align:center">
+        <div style="font-size:22px;font-weight:800;margin-bottom:8px">Your strategy is ready!</div>
+        <div style="color:#9CA3AF;font-size:15px;margin-bottom:28px">Enter your email and we'll send your full strategy + any bios right to your inbox.</div>
+        <form id="email-form" onsubmit="submitEmail(event)" style="display:flex;flex-direction:column;gap:12px">
+          <input type="email" id="email-input" placeholder="your@email.com" required style="background:#111827;border:1px solid #374151;border-radius:12px;color:#fff;font-size:16px;font-family:Inter,sans-serif;padding:16px;text-align:center;outline:none;width:100%">
+          <button type="submit" id="btn-send-email" style="background:#4F8EFF;color:#fff;border:none;border-radius:12px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;width:100%">
+            Send My Strategy →
+          </button>
+        </form>
+        <div id="email-error" style="color:#FCA5A5;font-size:14px;margin-top:12px;display:none"></div>
+        <div style="color:#4B5563;font-size:12px;margin-top:16px">No spam. Unsubscribe anytime.</div>
+      </div>
+    </div>
     <!-- Results -->
     <div class="results-wrap" id="results-section">
       <div class="results-header">
@@ -426,6 +442,47 @@
       btn.textContent = checked ? 'Generate Strategy + Bio' : 'Generate My Strategy';
     }
 
+    function showEmailCapture(planId) {
+      document.getElementById('loading-section').style.display = 'none';
+      document.getElementById('email-section').style.display = 'block';
+    }
+
+    async function submitEmail(e) {
+      e.preventDefault();
+      const email = document.getElementById('email-input').value.trim();
+      const btn = document.getElementById('btn-send-email');
+      const errorEl = document.getElementById('email-error');
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      errorEl.style.display = 'none';
+
+      try {
+        const payload = {
+          email: email,
+          plan_id: window._planId,
+          bios: window._bioResult || [],
+          bio_platform: document.getElementById('bio-platform')?.value || 'instagram',
+        };
+        const res = await fetch(API_BASE + '/api/send-plan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.detail || 'Send failed');
+        }
+        // Email sent — now show results
+        document.getElementById('email-section').style.display = 'none';
+        showResults(window._planId, window._bioResult);
+      } catch (err) {
+        errorEl.textContent = err.message;
+        errorEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Send My Strategy →';
+      }
+    }
+
     async function submitStrategy() {
       clearError(4);
       const wantBio = document.getElementById('gen-bio-check').checked;
@@ -474,7 +531,10 @@
           throw new Error(err.detail || 'Generation failed');
         }
         const strategyData = await strategyRes.json();
-        showResults(strategyData.plan_id, bioResult);
+        // Store for email step, then show email capture
+        window._planId = strategyData.plan_id;
+        window._bioResult = bioResult;
+        showEmailCapture(strategyData.plan_id);
       } catch (err) {
         document.getElementById('loading-section').style.display = 'none';
         document.getElementById('step-4').classList.add('active');

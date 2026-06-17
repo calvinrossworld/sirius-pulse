@@ -17,6 +17,7 @@ from pdf_builder import build_pdf
 from storage import save_plan, get_plan, update_plan_pdf_url
 from auditor import audit_profiles
 from bio import generate_bios
+from email import send_strategy_email
 
 app = FastAPI(title="Sirius Pulse API", version="1.2")
 
@@ -61,6 +62,50 @@ async def generate(request: GenerateRequest):
     plan_id = save_plan({"artist": request.model_dump(), "plan": plan})
 
     return JSONResponse({"plan_id": plan_id})
+
+
+class SendPlanRequest(BaseModel):
+    email: str
+    plan_id: str
+    bios: Optional[list] = None
+    bio_platform: Optional[str] = "instagram"
+
+
+@app.post("/api/send-plan")
+async def send_plan_route(request: SendPlanRequest):
+    """Fetch plan from Supabase and email it to the user."""
+    email_addr = request.email.strip()
+    if "@" not in email_addr:
+        raise HTTPException(status_code=400, detail="Invalid email")
+
+    plan = get_plan(request.plan_id)
+    if not plan:
+        raise HTTPException(status_code=404, detail="Plan not found")
+
+    artist_name = request.plan_id
+    if plan.get("artist"):
+        artist_name = plan["artist"].get("stage_name", request.plan_id)
+
+    sent = send_strategy_email(
+        to_email=email_addr,
+        artist_name=artist_name,
+        plan_data=plan.get("plan", {}),
+        bios=request.bios,
+        bio_platform=request.bio_platform or "instagram",
+    )
+    if not sent:
+        raise HTTPException(status_code=500, detail="Failed to send email")
+
+    # Save to waitlist too
+    try:
+        supabase.table("waitlist").upsert(
+            {"email": email_addr},
+            on_conflict="email",
+        ).execute()
+    except Exception as e:
+        print(f"Waitlist save error: {e}")
+
+    return JSONResponse({"ok": True, "message": "Strategy sent!"})
 
 
 @app.get("/plan/{plan_id}")
