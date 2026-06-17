@@ -22,38 +22,34 @@ Output format — fill in ALL sections for ALL platforms listed:
 {{
   "hashtags": {{
     "instagram": {{
-      "Genre Tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
-      "Niche Tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
-      "Trending Tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
-      "Artist Tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
-      "Campaign Tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"]
+      "Genre Tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+      "Niche Tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+      "Trending Tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+      "Campaign Tags": ["tag1", "tag2", "tag3", "tag4", "tag5"]
     }},
     "tiktok": {{
-      "Genre Tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
-      "Niche Tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
-      "Trending Tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
-      "Artist Tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
-      "Campaign Tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"]
+      "Genre Tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+      "Niche Tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+      "Trending Tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+      "Campaign Tags": ["tag1", "tag2", "tag3", "tag4", "tag5"]
     }},
     "youtube": {{
-      "Genre Tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
-      "Niche Tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
-      "Trending Tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
-      "Artist Tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
-      "Campaign Tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"]
+      "Genre Tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+      "Niche Tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+      "Trending Tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+      "Campaign Tags": ["tag1", "tag2", "tag3", "tag4", "tag5"]
     }},
     "twitter": {{
-      "Genre Tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
-      "Niche Tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
-      "Trending Tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
-      "Artist Tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
-      "Campaign Tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"]
+      "Genre Tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+      "Niche Tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+      "Trending Tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+      "Campaign Tags": ["tag1", "tag2", "tag3", "tag4", "tag5"]
     }}
   }}
 }}
 
 Rules:
-- Exactly 6 hashtags per category per platform — no more, no less
+- Exactly 5 hashtags per category per platform — no more, no less
 - All strings in double quotes
 - No trailing commas
 - No None, null, or undefined values — use empty arrays [] if needed
@@ -77,7 +73,7 @@ def generate_hashtags(genre: str, subgenre: str, promoting: str, stage_name: str
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_prompt},
         ],
-        max_tokens=4096,
+        max_tokens=8192,
         temperature=0.8,
         response_format={"type": "json_object"},
         extra_body={"thinking": {"type": "disabled"}},
