@@ -16,6 +16,7 @@ from generator import generate_plan
 from pdf_builder import build_pdf
 from storage import save_plan, get_plan, update_plan_pdf_url
 from auditor import audit_profiles
+from hashtags import generate_hashtags
 
 app = FastAPI(title="Sirius Pulse API", version="1.2")
 
@@ -116,6 +117,34 @@ async def root():
 @app.get("/audit")
 async def audit_page():
     return FileResponse(FRONTEND_DIR / "audit.html")
+
+
+@app.get("/hashtags")
+async def hashtags_page():
+    return FileResponse(FRONTEND_DIR / "hashtags.html")
+
+
+class HashtagRequest(BaseModel):
+    genre: str
+    subgenre: Optional[str] = ""
+    promoting: str
+    stage_name: Optional[str] = ""
+    platforms: list[str]
+
+
+@app.post("/hashtags")
+async def create_hashtags(request: HashtagRequest):
+    try:
+        result = generate_hashtags(
+            genre=request.genre,
+            subgenre=request.subgenre,
+            promoting=request.promoting,
+            stage_name=request.stage_name,
+            platforms=request.platforms,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    return JSONResponse(result)
 
 
 @app.post("/audit")
