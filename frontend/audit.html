@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile Audit — Sirius Pulse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    body { background: #0A0A0A; color: #fff; font-family: 'Inter', sans-serif; min-height: 100vh; }
+    .container { max-width: 720px; margin: 0 auto; padding: 40px 20px; }
+    .logo-link { text-decoration: none; color: inherit; display: inline-block; margin-bottom: 40px; }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-icon { font-size: 24px; color: #4F8EFF; }
+    .logo-name { font-size: 16px; font-weight: 700; letter-spacing: 3px; color: #fff; }
+    h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+    .subtitle { color: #6B7280; font-size: 15px; margin-bottom: 36px; }
+    .card { background: #111827; border: 1px solid #1F2937; border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+    .card h2 { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #fff; }
+    .section-label { font-size: 13px; font-weight: 600; color: #9CA3AF; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+    .upload-zone { border: 2px dashed #374151; border-radius: 12px; padding: 32px 20px; text-align: center; cursor: pointer; transition: border-color 0.2s; margin-bottom: 12px; }
+    .upload-zone:hover { border-color: #4F8EFF; }
+    .upload-zone.has-files { border-color: #22C55E; border-style: solid; }
+    .upload-zone p { color: #6B7280; font-size: 14px; margin: 8px 0 0; }
+    .upload-zone .browse { color: #4F8EFF; font-weight: 600; }
+    .file-list { list-style: none; padding: 0; margin: 0; }
+    .file-list li { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 13px; color: #9CA3AF; }
+    .file-list li::before { content: '🖼'; }
+    .platform-section { margin-bottom: 28px; }
+    .platform-name { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .remove-btn { background: none; border: none; color: #EF4444; font-size: 12px; cursor: pointer; padding: 0; margin-left: auto; }
+    .remove-btn:hover { color: #FCA5A5; }
+    input[type="file"] { display: none; }
+    .btn-primary { background: #4F8EFF; color: #fff; border: none; border-radius: 12px; padding: 16px 32px; font-size: 16px; font-weight: 700; cursor: pointer; width: 100%; transition: background 0.2s; }
+    .btn-primary:hover { background: #3B7BF5; }
+    .btn-primary:disabled { background: #374151; cursor: not-allowed; }
+    .loader-wrap { text-align: center; padding: 60px 20px; }
+    .loader { width: 48px; height: 48px; border: 4px solid #1F2937; border-top-color: #4F8EFF; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-text { color: #9CA3AF; font-size: 15px; }
+    .audit-result { display: none; }
+    .audit-result.show { display: block; }
+    .result-card { background: #111827; border: 1px solid #1F2937; border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+    .result-section { margin-bottom: 24px; }
+    .result-section:last-child { margin-bottom: 0; }
+    .result-section h3 { font-size: 16px; font-weight: 700; color: #4F8EFF; margin-bottom: 10px; }
+    .result-section p, .result-section li { color: #D1D5DB; font-size: 14px; line-height: 1.7; }
+    .result-section ul { padding-left: 20px; margin: 8px 0; }
+    .result-section li { margin-bottom: 6px; }
+    .grade-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; margin-bottom: 16px; }
+    .grade-a { background: #22C55E20; color: #22C55E; }
+    .grade-b { background: #84CC1620; color: #84CC16; }
+    .grade-c { background: #F59E0B20; color: #F59E0B; }
+    .grade-d { background: #EF444420; color: #EF4444; }
+    .error-msg { background: #EF444420; border: 1px solid #EF444440; border-radius: 10px; padding: 16px; color: #FCA5A5; font-size: 14px; margin-top: 16px; display: none; }
+    .error-msg.show { display: block; }
+    .audit-id { font-size: 11px; color: #4B5563; margin-top: 16px; text-align: center; }
+    .back-link { display: inline-block; margin-bottom: 24px; color: #6B7280; font-size: 14px; text-decoration: none; }
+    .back-link:hover { color: #9CA3AF; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="logo-link">
+      <div class="logo">
+        <span class="logo-icon">◎</span>
+        <span class="logo-name">SIRIUS PULSE</span>
+      </div>
+    </a>
+
+    <!-- Upload Form -->
+    <div id="upload-form">
+      <h1>Free Profile Audit</h1>
+      <p class="subtitle">Upload screenshots of your social profiles. We'll tell you what's working and what to fix.</p>
+
+      <div class="card">
+        <h2>What to screenshot</h2>
+        <p style="color:#9CA3AF;font-size:14px;margin-bottom:20px">For best results, upload one screenshot of each. You can skip any platform you don't use.</p>
+
+        <!-- Instagram -->
+        <div class="platform-section">
+          <div class="platform-name">📸 Instagram</div>
+          <p class="section-label">Profile + Bio</p>
+          <div class="upload-zone" onclick="document.getElementById('insta-input').click()" id="insta-zone">
+            <p><span class="browse">Click to browse</span> or drag screenshots here</p>
+            <p style="font-size:12px;margin-top:4px">Profile page · Bio · Highlights</p>
+          </div>
+          <input type="file" id="insta-input" accept="image/*" multiple onchange="handleFiles(this, 'insta')">
+          <ul class="file-list" id="insta-list"></ul>
+        </div>
+
+        <!-- TikTok -->
+        <div class="platform-section">
+          <div class="platform-name">🎵 TikTok</div>
+          <p class="section-label">Profile + Bio</p>
+          <div class="upload-zone" onclick="document.getElementById('tiktok-input').click()" id="tiktok-zone">
+            <p><span class="browse">Click to browse</span> or drag screenshots here</p>
+            <p style="font-size:12px;margin-top:4px">Profile page · Bio</p>
+          </div>
+          <input type="file" id="tiktok-input" accept="image/*" multiple onchange="handleFiles(this, 'tiktok')">
+          <ul class="file-list" id="tiktok-list"></ul>
+        </div>
+
+        <!-- YouTube -->
+        <div class="platform-section">
+          <div class="platform-name">▶️ YouTube</div>
+          <p class="section-label">Channel page + About section</p>
+          <div class="upload-zone" onclick="document.getElementById('youtube-input').click()" id="youtube-zone">
+            <p><span class="browse">Click to browse</span> or drag screenshots here</p>
+            <p style="font-size:12px;margin-top:4px">Channel page · About tab</p>
+          </div>
+          <input type="file" id="youtube-input" accept="image/*" multiple onchange="handleFiles(this, 'youtube')">
+          <ul class="file-list" id="youtube-list"></ul>
+        </div>
+
+        <!-- Twitter -->
+        <div class="platform-section">
+          <div class="platform-name">🐦 Twitter / X</div>
+          <p class="section-label">Profile page</p>
+          <div class="upload-zone" onclick="document.getElementById('twitter-input').click()" id="twitter-zone">
+            <p><span class="browse">Click to browse</span> or drag screenshots here</p>
+            <p style="font-size:12px;margin-top:4px">Profile page · Bio</p>
+          </div>
+          <input type="file" id="twitter-input" accept="image/*" multiple onchange="handleFiles(this, 'twitter')">
+          <ul class="file-list" id="twitter-list"></ul>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="submit-btn" onclick="submitAudit()">
+        Get My Free Audit
+      </button>
+      <div class="error-msg" id="error-msg"></div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loader-wrap" id="loading-section" style="display:none">
+      <div class="loader"></div>
+      <div class="loader-text">Analyzing your profiles…</div>
+      <div class="loader-text" style="font-size:13px;margin-top:8px;color:#4B5563">This takes about 15–30 seconds</div>
+    </div>
+
+    <!-- Results -->
+    <div class="audit-result" id="results-section">
+      <a href="/audit" class="back-link" onclick="resetAudit(); return false">← Upload another</a>
+      <h1>Your Profile Audit</h1>
+      <p class="subtitle" id="audit-meta"></p>
+
+      <div class="result-card" id="overall-card"></div>
+      <div class="result-card" id="platform-results"></div>
+      <div class="result-card" id="action-results"></div>
+
+      <a href="/" class="btn-primary" style="display:block;text-align:center;text-decoration:none;margin-top:8px">
+        Build Your Content Strategy →
+      </a>
+      <div class="audit-id" id="audit-id"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = '';
+
+    const files = { instagram: [], tiktok: [], youtube: [], twitter: [] };
+
+    function handleFiles(input, platform) {
+      files[platform] = Array.from(input.files);
+      const zone = document.getElementById(platform + '-zone');
+      const list = document.getElementById(platform + '-list');
+      list.innerHTML = '';
+      if (files[platform].length) {
+        zone.classList.add('has-files');
+        files[platform].forEach(f => {
+          const li = document.createElement('li');
+          li.textContent = f.name;
+          list.appendChild(li);
+        });
+      } else {
+        zone.classList.remove('has-files');
+      }
+    }
+
+    function hasFiles() {
+      return Object.values(files).some(a => a.length > 0);
+    }
+
+    async function submitAudit() {
+      if (!hasFiles()) {
+        showError('Please upload at least one screenshot before submitting.');
+        return;
+      }
+
+      document.getElementById('upload-form').style.display = 'none';
+      document.getElementById('loading-section').style.display = 'block';
+      document.getElementById('error-msg').classList.remove('show');
+
+      const formData = new FormData();
+      for (const [platform, imgs] of Object.entries(files)) {
+        imgs.forEach(f => formData.append(platform + '_files', f));
+      }
+
+      try {
+        const res = await fetch(API_BASE + '/audit', { method: 'POST', body: formData });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ detail: 'Unknown error' }));
+          throw new Error(err.detail || 'Server error');
+        }
+        const json = await res.json();
+        showResults(json);
+      } catch (err) {
+        document.getElementById('upload-form').style.display = 'block';
+        document.getElementById('loading-section').style.display = 'none';
+        showError(err.message);
+      }
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('error-msg');
+      el.textContent = msg;
+      el.classList.add('show');
+    }
+
+    function gradeLabel(grade) {
+      const labels = { A: 'Excellent', B: 'Good', C: 'Average', D: 'Needs Work', F: 'Critical' };
+      const cls = { A: 'grade-a', B: 'grade-b', C: 'grade-c', D: 'grade-d', F: 'grade-d' };
+      return { label: labels[grade] || grade, cls: cls[grade] || 'grade-c' };
+    }
+
+    function renderSection(title, content) {
+      if (!content) return '';
+      if (typeof content === 'string') {
+        return `<div class="result-section"><h3>${title}</h3><p>${content}</p></div>`;
+      }
+      let html = `<div class="result-section"><h3>${title}</h3>`;
+      if (content.strengths?.length) {
+        html += `<ul>${content.strengths.map(s => `<li>${s}</li>`).join('')}</ul>`;
+      }
+      if (content.weaknesses?.length) {
+        html += `<ul>${content.weaknesses.map(w => `<li>${w}</li>`).join('')}</ul>`;
+      }
+      if (content.overall) {
+        html += `<p>${content.overall}</p>`;
+      }
+      html += '</div>';
+      return html;
+    }
+
+    function showResults(data) {
+      document.getElementById('loading-section').style.display = 'none';
+      document.getElementById('results-section').classList.add('show');
+
+      const { grade, overall_summary, platform_audits, top_actions } = data;
+
+      // Overall
+      const { label, cls } = gradeLabel(grade);
+      document.getElementById('overall-card').innerHTML = `
+        <span class="grade-badge ${cls}">Grade: ${label}</span>
+        ${renderSection('Overall Summary', overall_summary)}
+      `;
+
+      // Platform breakdowns
+      const platformHTML = Object.entries(platform_audits || {}).map(([platform, audit]) => {
+        const icons = { instagram: '📸', tiktok: '🎵', youtube: '▶️', twitter: '🐦' };
+        const gradeInfo = audit.grade ? gradeLabel(audit.grade) : { label: '—', cls: '' };
+        return `
+          <div class="result-section">
+            <h3>${icons[platform] || ''} ${platform.charAt(0).toUpperCase() + platform.slice(1)}</h3>
+            ${audit.grade ? `<span class="grade-badge ${gradeInfo.cls}">${gradeInfo.label}</span>` : ''}
+            ${renderSection('', audit)}
+          </div>
+        `;
+      }).join('');
+      document.getElementById('platform-results').innerHTML = platformHTML || '<p style="color:#6B7280">No platform data.</p>';
+
+      // Action steps
+      document.getElementById('action-results').innerHTML = `
+        <div class="result-section">
+          <h3>🎯 Your Action Steps</h3>
+          ${top_actions?.length ? `<ol style="padding-left:20px">${top_actions.map(a => `<li style="margin-bottom:8px;color:#D1D5DB;font-size:14px">${a}</li>`).join('')}</ol>` : '<p>No specific actions generated.</p>'}
+        </div>
+      `;
+
+      document.getElementById('audit-id').textContent = `Audit ID: ${data.audit_id || ''}`;
+    }
+
+    function resetAudit() {
+      ['instagram','tiktok','youtube','twitter'].forEach(p => {
+        files[p] = [];
+        document.getElementById(p + '-list').innerHTML = '';
+        document.getElementById(p + '-zone').classList.remove('has-files');
+        document.getElementById(p + '-input').value = '';
+      });
+      document.getElementById('results-section').classList.remove('show');
+      document.getElementById('upload-form').style.display = 'block';
+      document.getElementById('error-msg').classList.remove('show');
+    }
+  </script>
+</body>
+</html>

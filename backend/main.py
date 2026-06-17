@@ -2,8 +2,9 @@
 import os
 import json
 import uuid
+import tempfile
 from pathlib import Path
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi import Path as PathParam
@@ -14,6 +15,7 @@ from typing import Optional
 from generator import generate_plan
 from pdf_builder import build_pdf
 from storage import save_plan, get_plan, update_plan_pdf_url
+from auditor import audit_profiles
 
 app = FastAPI(title="Sirius Pulse API", version="1.2")
 
@@ -109,6 +111,74 @@ async def download_plan(plan_id: str = PathParam(..., description="Plan ID")):
 @app.get("/")
 async def root():
     return FileResponse(FRONTEND_DIR / "index.html")
+
+
+@app.get("/audit")
+async def audit_page():
+    return FileResponse(FRONTEND_DIR / "audit.html")
+
+
+@app.post("/audit")
+async def create_audit(
+    insta_files: list[UploadFile] = Form(None),
+    tiktok_files: list[UploadFile] = Form(None),
+    youtube_files: list[UploadFile] = Form(None),
+    twitter_files: list[UploadFile] = Form(None),
+):
+    # Collect files by platform
+    platform_files: dict[str, list[str]] = {}
+    for platform, uploads in [
+        ("instagram", insta_files or []),
+        ("tiktok", tiktok_files or []),
+        ("youtube", youtube_files or []),
+        ("twitter", twitter_files or []),
+    ]:
+        paths = []
+        for upload in uploads:
+            if not upload.content_type or not upload.content_type.startswith("image/"):
+                continue
+            suffix = os.path.splitext(upload.filename or ".png")[1] or ".png"
+            with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as f:
+                content = await upload.read()
+                f.write(content)
+                f.flush()
+                paths.append(f.name)
+        if paths:
+            platform_files[platform] = paths
+
+    if not platform_files:
+        raise HTTPException(status_code=400, detail="No valid images provided")
+
+    try:
+        audit_result = audit_profiles(platform_files)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Audit failed: {str(e)}")
+    finally:
+        # Clean up temp files
+        for paths in platform_files.values():
+            for p in paths:
+                try:
+                    os.unlink(p)
+                except Exception:
+                    pass
+
+    # Save to Supabase if configured
+    audit_id = str(uuid.uuid4())[:8]
+    SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
+    SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "")
+    if SUPABASE_URL and SUPABASE_KEY:
+        try:
+            from supabase import create_client
+            supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+            supabase.table("audits").insert({
+                "id": audit_id,
+                "audit_data": audit_result,
+                "platforms": list(platform_files.keys()),
+            }).execute()
+        except Exception as e:
+            print(f"Audit save failed: {e}")
+
+    return JSONResponse({"audit_id": audit_id, **audit_result})
 
 
 if __name__ == "__main__":
