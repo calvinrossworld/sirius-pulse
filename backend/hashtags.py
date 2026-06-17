@@ -25,8 +25,8 @@ Return this exact JSON structure:
       "Genre Tags": ["#genre #genreartist etc — broad discovery"],
       "Niche Tags": ["#mood #vibe #aesthetic — targeted to their specific style"],
       "Trending Tags": ["currently popular music hashtags in their lane"],
-      "Artist Tags": ["#{stage_name} or variations they own"],
-      "Campaign Tags": ["#{promotion_name} or relevant campaign tags"]
+      "Artist Tags": ["#YourArtistName or variations they own"],
+      "Campaign Tags": ["#{promoting} or relevant campaign tags"]
     }},
     "tiktok": {{ ... same structure ... }},
     "youtube": {{ ... same structure ... }},
