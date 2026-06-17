@@ -82,9 +82,8 @@ def generate_bios(stage_name: str, genre: str, subgenre: str, career_stage: str,
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_prompt},
         ],
-        max_tokens=1024,
+        max_tokens=2048,
         temperature=0.85,
-        response_format={"type": "json_object"},
         extra_body={"thinking": {"type": "disabled"}},
     )
 
