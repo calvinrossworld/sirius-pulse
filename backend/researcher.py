@@ -2,19 +2,25 @@
 import os
 import httpx
 
-# Use OpenRouter DeepSeek V4 Pro for synthesis
-client = httpx.Client(
-    base_url="https://openrouter.ai/api/v1",
-    headers={
-        "Authorization": f"Bearer {os.environ.get('OPENROUTER_KEY', '')}",
-    },
-    timeout=30.0,
-)
+OPENROUTER_KEY = os.environ.get("OPENROUTER_KEY", "")
+
+
+def _get_client() -> httpx.Client | None:
+    if not OPENROUTER_KEY:
+        return None
+    return httpx.Client(
+        base_url="https://openrouter.ai/api/v1",
+        headers={"Authorization": f"Bearer {OPENROUTER_KEY}"},
+        timeout=30.0,
+    )
 
 
 def _search(query: str) -> str:
     """Run a web search and return top results as a summary string."""
     try:
+        client = _get_client()
+        if not client:
+            return "Research unavailable: OPENROUTER_KEY not configured."
         response = client.post(
             "/search",
             json={
@@ -28,7 +34,6 @@ def _search(query: str) -> str:
         results = data.get("results", [])
         if not results:
             return "No results found."
-        # Return top 3 results as formatted text
         summaries = []
         for r in results[:3]:
             title = r.get("title", "")
@@ -41,8 +46,12 @@ def _search(query: str) -> str:
 
 
 def _synthesize(topic: str, raw_results: str) -> str:
-    """Use a lightweight model to synthesize search results into a clean summary."""
+    """Use DeepSeek V4 Pro to synthesize search results into a clean summary."""
     try:
+        client = _get_client()
+        if not client:
+            return raw_results[:500] if raw_results else "No information found."
+
         response = client.post(
             "/chat/completions",
             json={
@@ -64,8 +73,7 @@ def _synthesize(topic: str, raw_results: str) -> str:
         response.raise_for_status()
         data = response.json()
         return data["choices"][0]["message"]["content"].strip()
-    except Exception as e:
-        # Fallback: just return raw results if synthesis fails
+    except Exception:
         return raw_results[:500] if raw_results else "No information found."
 
 
@@ -74,12 +82,10 @@ def research_artist(stage_name: str, genre: str, model_artists: str = "") -> dic
     Run research on an artist and their genre context.
     Returns a dict with artist_profile, genre_trends, model_artist_context.
     """
-    # All 3 searches run in parallel conceptually; here sequential for simplicity
     search_artist = _search(f'"{stage_name}" "{genre}" music')
     search_genre = _search(f"{genre} music trends 2025 content strategy")
     search_model = _search(f"{model_artists} recent release strategy 2025") if model_artists else ""
 
-    # Synthesize each
     artist_profile = _synthesize(f"{stage_name} {genre} artist", search_artist)
     genre_trends = _synthesize(f"{genre} music trends 2025", search_genre)
     model_context = _synthesize(f"{model_artists} music strategy", search_model) if model_artists else ""
