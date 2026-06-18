@@ -2,12 +2,21 @@
 import os
 import json
 import re
-from openai import OpenAI
 
-client = OpenAI(
-    api_key=os.environ.get("OPENROUTER_KEY", ""),
-    base_url="https://openrouter.ai/api/v1",
-)
+_system_cache = None
+_client_cache = None
+
+
+def _get_client():
+    global _client_cache
+    if _client_cache is None:
+        from openai import OpenAI
+        _client_cache = OpenAI(
+            api_key=os.environ.get("OPENROUTER_KEY", ""),
+            base_url="https://openrouter.ai/api/v1",
+        )
+    return _client_cache
+
 
 SYSTEM_PROMPT = """You are a strategic content advisor for independent and emerging musicians. Your specialty is R&B, hip-hop, pop, and Afrobeats. You understand how each platform's algorithm works in 2025, what content actually converts followers to fans, and what separates artists who stagnate from those who build real momentum.
 
@@ -132,6 +141,7 @@ def generate_plan(artist_data: dict, research_data: dict = None, max_retries: in
     last_error = None
     for attempt in range(max_retries + 1):
         try:
+            client = _get_client()
             response = client.chat.completions.create(
                 model="openai/gpt-4.1-mini",
                 messages=[

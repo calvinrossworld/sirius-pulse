@@ -2,12 +2,20 @@
 import os
 import json
 import re
-from openai import OpenAI
 
-client = OpenAI(
-    api_key=os.environ.get("OPENROUTER_KEY", ""),
-    base_url="https://openrouter.ai/api/v1",
-)
+_client_cache = None
+
+
+def _get_client():
+    global _client_cache
+    if _client_cache is None:
+        from openai import OpenAI
+        _client_cache = OpenAI(
+            api_key=os.environ.get("OPENROUTER_KEY", ""),
+            base_url="https://openrouter.ai/api/v1",
+        )
+    return _client_cache
+
 
 SYSTEM_PROMPT = """You are a world-class music publicist and brand writer. You write tight, compelling artist bios that sound authentic and capture a specific sonic identity. You specialize in R&B, hip-hop, pop, and Afrobeats."""
 
@@ -43,6 +51,7 @@ Rules:
 - Vary tone across the 3 options (e.g., one confident/assertive, one storytelling, one evocative)
 - Return: ["bio 1", "bio 2", "bio 3"]"""
 
+    client = _get_client()
     response = client.chat.completions.create(
         model="openai/gpt-4.1-mini",
         messages=[
