@@ -172,7 +172,7 @@
       </div>
 
       <div class="btn-row">
-        <button type="button" class="btn-next" id="btn-1-next" onclick="alert('Button clicked! Running nextStep(1)...'); nextStep(1); return false;">Continue →</button>
+        <button type="button" class="btn-next" id="btn-1-next" onclick="nextStep(1)">Continue →</button>
       </div>
       <div class="error-msg" id="err-1"></div>
     </div>
@@ -377,12 +377,8 @@
     }
 
     function nextStep(step) {
-      window.__lastClick = Date.now();
-      try {
-        clearError(step);
-      } catch(e) { alert('clearError error: ' + e); return; }
-
-      if (step === 1) {
+clearError(step);
+            if (step === 1) {
         const nameEl = document.getElementById('s1-name');
         const genreEl = document.getElementById('s1-genre');
         const stageEl = document.getElementById('s1-stage');
