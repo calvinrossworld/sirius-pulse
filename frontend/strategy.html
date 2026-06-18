@@ -172,7 +172,7 @@
       </div>
 
       <div class="btn-row">
-        <button class="btn-next" id="btn-1-next" onclick="nextStep(1)">Continue →</button>
+        <button type="button" class="btn-next" id="btn-1-next" onclick="nextStep(1)">Continue →</button>
       </div>
       <div class="error-msg" id="err-1"></div>
     </div>
@@ -211,8 +211,8 @@
       </div>
 
       <div class="btn-row">
-        <button class="btn-back" onclick="prevStep(2)">← Back</button>
-        <button class="btn-next" id="btn-2-next" onclick="nextStep(2)">Continue →</button>
+        <button type="button" class="btn-back" onclick="prevStep(2)">← Back</button>
+        <button type="button" class="btn-next" id="btn-2-next" onclick="nextStep(2)">Continue →</button>
       </div>
       <div class="error-msg" id="err-2"></div>
     </div>
@@ -234,8 +234,8 @@
       </div>
 
       <div class="btn-row">
-        <button class="btn-back" onclick="prevStep(3)">← Back</button>
-        <button class="btn-next" onclick="nextStep(3)">Review →</button>
+        <button type="button" class="btn-back" onclick="prevStep(3)">← Back</button>
+        <button type="button" class="btn-next" onclick="nextStep(3)">Review →</button>
       </div>
       <div class="error-msg" id="err-3"></div>
     </div>
@@ -261,8 +261,8 @@
       </div>
 
       <div class="btn-row">
-        <button class="btn-back" onclick="prevStep(4)">← Back</button>
-        <button class="btn-generate" id="btn-generate" onclick="submitStrategy()">
+        <button type="button" class="btn-back" onclick="prevStep(4)">← Back</button>
+        <button type="button" class="btn-generate" id="btn-generate" onclick="submitStrategy()">
           Generate My Strategy
         </button>
       </div>
@@ -466,7 +466,7 @@
         </div>
         <div style="display:flex;flex-direction:column;gap:12px;margin-top:20px">
           <a href="/download/${planId}" class="btn-primary" style="text-align:center;text-decoration:none;display:block">Download PDF</a>
-          <button class="btn-next" onclick="window.location.href='/strategy'" style="background:#1F2937;color:#9CA3AF;font-weight:600">Start Over</button>
+          <button type="button" class="btn-next" onclick="window.location.href='/strategy'" style="background:#1F2937;color:#9CA3AF;font-weight:600">Start Over</button>
         </div>
         <div style="font-size:12px;color:#6B7280;margin-top:12px">Your strategy and artist bio are included in your downloaded PDF.</div>
       `;
