@@ -98,7 +98,9 @@ async def send_plan_route(request: SendPlanRequest):
 
     # Save to waitlist too
     try:
-        supabase.table("waitlist").upsert(
+        from supabase import create_client
+        _supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+        _supabase.table("waitlist").upsert(
             {"email": email_addr},
             on_conflict="email",
         ).execute()
