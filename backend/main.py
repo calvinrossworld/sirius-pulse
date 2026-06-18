@@ -17,7 +17,7 @@ from pdf_builder import build_pdf
 from storage import save_plan, get_plan, update_plan_pdf_url
 from auditor import audit_profiles
 from bio import generate_bios
-from email import send_strategy_email
+from mailer import send_strategy_email
 
 app = FastAPI(title="Sirius Pulse API", version="1.2")
 
