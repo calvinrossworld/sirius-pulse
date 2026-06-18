@@ -250,30 +250,14 @@
       </div>
 
       <!-- Bio opt-in -->
-      <div class="card" id="bio-optin-card" style="border-color:#374151;">
+      <div class="card" style="border-color:#374151;">
         <label style="display:flex;align-items:flex-start;gap:14px;cursor:pointer;user-select:none;">
-          <input type="checkbox" id="gen-bio-check" onchange="toggleBioOpts()" style="width:20px;height:20px;margin-top:2px;accent-color:#4F8EFF;cursor:pointer;flex-shrink:0;">
+          <input type="checkbox" id="include-research" style="width:20px;height:20px;margin-top:2px;accent-color:#4F8EFF;cursor:pointer;flex-shrink:0;">
           <div>
-            <div style="font-size:15px;font-weight:700;margin-bottom:4px;">Also generate my bio</div>
-            <div style="font-size:13px;color:#6B7280;">Get Instagram, TikTok, and EPK bios tailored to your artist profile — no extra form to fill out.</div>
+            <div style="font-size:15px;font-weight:700;margin-bottom:4px;">Include web research</div>
+            <div style="font-size:13px;color:#6B7280;">We'll research your artist profile, genre trends, and model artists to build a more targeted strategy. Adds ~10 seconds.</div>
           </div>
         </label>
-        <div id="bio-options" style="display:none;margin-top:18px;padding-top:18px;border-top:1px solid #1F2937;">
-          <div class="field">
-            <label>Primary platform</label>
-            <div class="select-wrap">
-              <select id="bio-platform">
-                <option value="instagram">Instagram</option>
-                <option value="tiktok">TikTok</option>
-                <option value="epk">EPK (Electronic Press Kit)</option>
-              </select>
-            </div>
-          </div>
-          <div class="field" style="margin-bottom:0">
-            <label>Artist vibe or description <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#6B7280;font-size:12px">(optional)</span></label>
-            <input type="text" id="bio-about" placeholder="e.g. dark, moody, late-night drive vibes">
-          </div>
-        </div>
       </div>
 
       <div class="btn-row">
@@ -419,59 +403,24 @@
       `;
     }
 
-    function toggleBioOpts() {
-      const checked = document.getElementById('gen-bio-check').checked;
-      document.getElementById('bio-options').style.display = checked ? 'block' : 'none';
-      const btn = document.getElementById('btn-generate');
-      btn.textContent = checked ? 'Generate Strategy + Bio' : 'Generate My Strategy';
-    }
-
-
     async function submitStrategy() {
       clearError(4);
-      const wantBio = document.getElementById('gen-bio-check').checked;
+      const includeResearch = document.getElementById('include-research').checked;
       document.getElementById('step-4').classList.remove('active');
       document.getElementById('progress-wrap').style.display = 'none';
       const loaderText = document.querySelector('.loader-text');
       const loaderSub = document.querySelector('.loader-sub');
-      loaderText.textContent = wantBio ? 'Building your strategy & generating your bio…' : 'Building your strategy…';
+      loaderText.textContent = includeResearch
+        ? 'Researching your landscape…'
+        : 'Building your strategy…';
       loaderSub.textContent = 'Just a moment — instance may be waking up…';
       document.getElementById('loading-section').style.display = 'block';
 
       try {
-        let bioResult = null;
-        const payload = { ...formData };
+        const payload = { ...formData, include_research: includeResearch };
 
-        // Generate bio first if requested, then include in the generate request
-        if (wantBio) {
-          const platform = document.getElementById('bio-platform').value;
-          const about = document.getElementById('bio-about').value.trim();
-          const bioPayload = {
-            stage_name: formData.stage_name,
-            genre: formData.genre,
-            subgenre: formData.subgenre || '',
-            career_stage: formData.career_stage,
-            vibes: [],
-            about: about,
-            platform: platform,
-          };
-          const bioController = new AbortController();
-          const bioTimeout = setTimeout(() => bioController.abort(), 90000);
-          const bioRes = await fetch(API_BASE + '/bio', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(bioPayload),
-            signal: bioController.signal,
-          }).finally(() => clearTimeout(bioTimeout));
-          if (!bioRes.ok) throw new Error('Bio generation failed');
-          const bioData = await bioRes.json();
-          bioResult = bioData.bios;
-          payload.bios = bioResult;
-        }
-
-        // Now send strategy request with bios included (if any)
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 90000);
+        const timeout = setTimeout(() => controller.abort(), 120000);
         const strategyRes = await fetch(API_BASE + '/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -484,8 +433,7 @@
           throw new Error(err.detail || 'Generation failed');
         }
         const strategyData = await strategyRes.json();
-        // Show results immediately
-        showResults(strategyData.plan_id, bioResult);
+        showResults(strategyData.plan_id);
       } catch (err) {
         document.getElementById('loading-section').style.display = 'none';
         document.getElementById('step-4').classList.add('active');
@@ -497,7 +445,7 @@
       }
     }
 
-    function showResults(planId, bioResult) {
+    function showResults(planId) {
       document.getElementById('loading-section').style.display = 'none';
       document.getElementById('results-section').classList.add('show');
 
@@ -519,29 +467,10 @@
         <div style="display:flex;flex-direction:column;gap:12px;margin-top:20px">
           <a href="/download/${planId}" class="btn-primary" style="text-align:center;text-decoration:none;display:block">Download PDF</a>
           <button class="btn-next" onclick="window.location.href='/strategy'" style="background:#1F2937;color:#9CA3AF;font-weight:600">Start Over</button>
-        </div>`;
+        </div>
+        <div style="font-size:12px;color:#6B7280;margin-top:12px">Your strategy and artist bio are included in your downloaded PDF.</div>
+      `;
 
-      // Bio results
-      if (bioResult && bioResult.length > 0) {
-        const platformLabel = { instagram: 'Instagram Bio', tiktok: 'TikTok Bio', epk: 'EPK Bio' };
-        const platform = document.getElementById('bio-platform')?.value || 'instagram';
-        html += `
-          <div class="results-divider"></div>
-          <div style="margin-bottom:8px"><span style="font-size:13px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:1px;">Your Generated Bios</span></div>
-          <div class="card">
-            ${bioResult.map((bio, i) => `
-              <div class="bio-variant">
-                <div class="bio-variant-label">Variant ${i + 1}</div>
-                <div class="bio-variant-text">${bio.text || bio}</div>
-                ${bio.text ? `<div class="bio-char">${bio.text.length} characters${platform !== 'epk' && bio.text.length > 150 ? ' (may need trimming for ' + platform + ')' : ''}</div>` : ''}
-              </div>
-            `).join('')}
-          </div>`;
-      }
-
-      document.getElementById('results-plan').innerHTML = html;
-      document.getElementById('plan-id-display').textContent = 'Plan saved. Download your PDF below.';
+      document.getElementById('results-section').innerHTML = html;
     }
-  </script>
-</body>
 </html>

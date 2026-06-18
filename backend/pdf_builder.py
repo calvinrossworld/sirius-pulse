@@ -11,6 +11,7 @@ BRAND_BLACK = HexColor("#0A0A0A")
 BRAND_BLUE = HexColor("#4F8EFF")
 BRAND_GRAY = HexColor("#6B7280")
 BRAND_LIGHT = HexColor("#F3F4F6")
+BRAND_GREEN = HexColor("#10B981")
 
 
 def _to_text(val):
@@ -70,15 +71,6 @@ def build_pdf(plan_data: dict, artist_name: str, output_path: str, bios: list = 
         spaceAfter=6,
         leading=15,
     )
-    platform_header_style = ParagraphStyle(
-        "PlatformHeader",
-        parent=styles["Heading3"],
-        fontSize=12,
-        textColor=BRAND_BLACK,
-        spaceBefore=14,
-        spaceAfter=4,
-        fontName="Helvetica-Bold",
-    )
     label_style = ParagraphStyle(
         "Label",
         parent=styles["Normal"],
@@ -88,6 +80,25 @@ def build_pdf(plan_data: dict, artist_name: str, output_path: str, bios: list = 
         spaceAfter=2,
         fontName="Helvetica-Bold",
     )
+    quick_win_style = ParagraphStyle(
+        "QuickWin",
+        parent=styles["Normal"],
+        fontSize=11,
+        textColor=BRAND_GREEN,
+        spaceBefore=4,
+        spaceAfter=4,
+        leading=16,
+        fontName="Helvetica-Bold",
+    )
+    mistake_style = ParagraphStyle(
+        "Mistake",
+        parent=styles["Normal"],
+        fontSize=10,
+        textColor=HexColor("#EF4444"),
+        spaceBefore=4,
+        spaceAfter=4,
+        leading=14,
+    )
 
     story = []
 
@@ -96,6 +107,13 @@ def build_pdf(plan_data: dict, artist_name: str, output_path: str, bios: list = 
     story.append(Paragraph(artist_name, title_style))
     story.append(Paragraph("Content Strategy Plan", tagline_style))
     story.append(HRFlowable(width="100%", thickness=2, color=BRAND_BLUE, spaceAfter=16))
+
+    # Quick Win — new prominent section
+    quick_win = plan_data.get("quick_win", "")
+    if quick_win:
+        story.append(Paragraph("⚡ QUICK WIN — Next 48 Hours", section_style))
+        story.append(Paragraph(quick_win, quick_win_style))
+        story.append(Spacer(1, 0.1 * inch))
 
     # Profile Audit
     story.append(Paragraph("Profile Audit", section_style))
@@ -121,6 +139,11 @@ def build_pdf(plan_data: dict, artist_name: str, output_path: str, bios: list = 
             story.append(Paragraph(f"<b>Frequency:</b> {freq}", body_style))
         if times:
             story.append(Paragraph(f"<b>Best Times:</b> {times}", body_style))
+
+        # Common mistake
+        mistake = data.get("common_mistake", "")
+        if mistake:
+            story.append(Paragraph(f"❗ Common Mistake: {mistake}", mistake_style))
 
         # Example posts
         example_posts = data.get("example_posts", [])
@@ -154,7 +177,7 @@ def build_pdf(plan_data: dict, artist_name: str, output_path: str, bios: list = 
         tactics_text = _to_text(tactics)
         story.append(Paragraph(tactics_text.replace("\n", "<br/>"), body_style))
 
-    # Bio section — only if bios were provided
+    # Artist Bio — always included if available
     if bios:
         story.append(Paragraph("Artist Bio", section_style))
         for i, bio in enumerate(bios, 1):

@@ -1,80 +1,47 @@
-"""Artist bio generator using AI."""
+"""Artist bio generator using AI — EPK style, always included in strategy PDF."""
 import os
 import json
+import re
 from openai import OpenAI
 
 client = OpenAI(
-    api_key=os.getenv("OPENROUTER_API_KEY", ""),
+    api_key=os.environ.get("OPENROUTER_KEY", ""),
     base_url="https://openrouter.ai/api/v1",
 )
 
-SYSTEM_PROMPT = """You are a world-class music publicist and brand writer. You write tight, compelling artist bios that sound authentic and capture a specific sonic identity."""
+SYSTEM_PROMPT = """You are a world-class music publicist and brand writer. You write tight, compelling artist bios that sound authentic and capture a specific sonic identity. You specialize in R&B, hip-hop, pop, and Afrobeats."""
 
-USER_PROMPT_TEMPLATES = {
-    "instagram": """Write a professional Instagram artist bio for a music artist. Return ONLY valid JSON array of 3 bio strings — no markdown, no explanation.
 
-Artist: {stage_name}
-Genre: {genre}
-Sub-genre/Style: {subgenre}
-Career Stage: {career_stage}
-Vibe: {vibes}
-About: {about}
+def generate_bios(
+    stage_name: str,
+    genre: str,
+    subgenre: str,
+    career_stage: str,
+    vibes: list,
+    about: str,
+    research_data: dict = None,
+) -> list[str]:
+    """Generate 3 EPK-style artist bios. Always returns 3 variants."""
+    research = research_data or {}
 
-Rules:
-- Exactly 3 different bios, each hitting the character limit of 150 chars or under
-- Each bio must be in the JSON array as separate strings
-- Vary the approach: one confident/assertive, one storytelling/focused on the music, one more mysterious or evocative
-- Include genre signals where they fit naturally
-- No emojis, no line breaks, no special characters
-- All bios must be DIFFERENT from each other in tone/angle
-- Return: ["bio 1", "bio 2", "bio 3"]""",
-
-    "tiktok": """Write a tight TikTok artist bio. Return ONLY valid JSON array of 3 bio strings — no markdown, no explanation.
+    user_prompt = f"""Write a 2-3 sentence artist bio for a press kit / EPK. Return ONLY valid JSON array of 3 bio strings — no markdown, no explanation.
 
 Artist: {stage_name}
 Genre: {genre}
+Sub-genre/Style: {subgenre or 'not specified'}
 Career Stage: {career_stage}
-Vibe: {vibes}
-About: {about}
+Vibe: {vibes or 'confident, authentic'}
+About: {about or 'not specified'}
 
-Rules:
-- Exactly 3 different bios, each 80 chars or under
-- TikTok bios are ultra-short — make every character count
-- Vary the angle: one confident, one more intriguing/mysterious, one focused on what makes them different
-- No emojis
-- Return: ["bio 1", "bio 2", "bio 3"]""",
-
-    "epk": """Write a 2-3 sentence artist bio for a press kit / EPK. Return ONLY valid JSON array of 3 bio strings — no markdown, no explanation.
-
-Artist: {stage_name}
-Genre: {genre}
-Sub-genre/Style: {subgenre}
-Career Stage: {career_stage}
-Vibe: {vibes}
-About: {about}
+Research context (factor into bios if helpful):
+- Artist's existing presence: {research.get('artist_profile', 'Limited information — artist is building their presence.')}
 
 Rules:
 - Exactly 3 different bios, each 2-3 sentences
 - Third-person voice (written about the artist, not by them)
 - Cover: who they are, what they sound like, why it matters
-- Vary tone across the 3 options
-- Return: ["bio 1", "bio 2", "bio 3"]""",
-}
-
-
-def generate_bios(stage_name: str, genre: str, subgenre: str, career_stage: str,
-                   vibes: list, about: str, platform: str) -> list[str]:
-    template = USER_PROMPT_TEMPLATES.get(platform, USER_PROMPT_TEMPLATES["instagram"])
-    vibes_str = ", ".join(vibes) if vibes else "confident, authentic"
-
-    user_prompt = template.format(
-        stage_name=stage_name,
-        genre=genre,
-        subgenre=subgenre or "not specified",
-        career_stage=career_stage,
-        vibes=vibes_str,
-        about=about or "not specified",
-    )
+- Vary tone across the 3 options (e.g., one confident/assertive, one storytelling, one evocative)
+- Return: ["bio 1", "bio 2", "bio 3"]"""
 
     response = client.chat.completions.create(
         model="openai/gpt-4.1-mini",
@@ -82,40 +49,38 @@ def generate_bios(stage_name: str, genre: str, subgenre: str, career_stage: str,
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_prompt},
         ],
-        max_tokens=3072,
+        max_tokens=2048,
         temperature=0.85,
-        extra_body={"thinking": {"type": "disabled"}},
     )
 
     raw = response.choices[0].message.content.strip()
 
-    # Try to extract JSON from markdown code blocks
+    # Strip markdown code blocks
     if raw.startswith("```"):
-        raw = raw.split("```")[1]
-        if raw.startswith("json"):
-            raw = raw[4:]
-        raw = raw.strip()
+        match = re.search(r"```(?:json)?\s*(.*?)```", raw, re.DOTALL)
+        if match:
+            raw = match.group(1).strip()
 
-    # Try direct JSON parse
+    # Try direct parse
     try:
         parsed = json.loads(raw)
         if isinstance(parsed, list):
-            return parsed
-        return [parsed]
+            return parsed[:3]
     except json.JSONDecodeError:
         pass
 
-    # Try to extract array from raw text
-    import re
+    # Try extracting array from raw text
     match = re.search(r'\[.*\]', raw, re.DOTALL)
     if match:
         try:
-            return json.loads(match.group())
+            parsed = json.loads(match.group())
+            if isinstance(parsed, list):
+                return parsed[:3]
         except Exception:
             pass
 
-    # If raw text looks like plain bios (not JSON), split by newlines or double newlines
-    lines = [l.strip() for l in raw.replace('"', '').split('\n') if l.strip() and len(l.strip()) > 10]
+    # Fallback: split by double newlines or numbered items
+    lines = [l.strip() for l in raw.replace('"', '').split('\n') if l.strip() and len(l.strip()) > 20]
     if lines:
         return lines[:3]
 

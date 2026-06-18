@@ -19,7 +19,7 @@ from auditor import audit_profiles
 from bio import generate_bios
 from mailer import send_strategy_email
 
-app = FastAPI(title="Sirius Pulse API", version="1.3")
+app = FastAPI(title="Sirius Pulse API", version="1.4")
 
 # Serve frontend static files
 BASE_DIR = Path(__file__).parent
@@ -50,21 +50,55 @@ class GenerateRequest(BaseModel):
     promoting: str
     model_artists: Optional[str] = ""
     challenge: Optional[str] = ""
-    bios: Optional[list[str]] = None
+    include_research: bool = False
 
 
 @app.post("/generate")
 async def generate(request: GenerateRequest):
+    """Generate strategy + bio, save to Supabase, return plan_id."""
+    research_data = None
+
+    # Run research first if requested
+    if request.include_research:
+        try:
+            from researcher import research_artist
+            research_data = research_artist(
+                stage_name=request.stage_name,
+                genre=request.genre,
+                model_artists=request.model_artists or "",
+            )
+        except Exception as e:
+            # Non-fatal: proceed without research
+            print(f"Research failed: {e}")
+            research_data = None
+
+    # Generate strategy
     try:
-        plan = generate_plan(request.model_dump())
+        plan = generate_plan(request.model_dump(exclude={"include_research"}), research_data=research_data)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    # Include bios in stored data if provided
+    # Generate bios — always, using research context if available
+    try:
+        bios = generate_bios(
+            stage_name=request.stage_name,
+            genre=request.genre,
+            subgenre=request.subgenre,
+            career_stage=request.career_stage,
+            vibes=[],
+            about="",
+            research_data=research_data,
+        )
+    except Exception as e:
+        # Non-fatal: proceed without bios
+        print(f"Bio generation failed: {e}")
+        bios = []
+
+    # Save everything
     plan_id = save_plan({
-        "artist": request.model_dump(exclude={"bios"}),
+        "artist": request.model_dump(exclude={"include_research"}),
         "plan": plan,
-        "bios": request.bios or [],
+        "bios": bios,
     })
 
     return JSONResponse({"plan_id": plan_id})
@@ -153,7 +187,6 @@ async def download_plan(plan_id: str = PathParam(..., description="Plan ID")):
             pdf_url = f"{SUPABASE_URL}/storage/v1/object/public/pdfs/{plan_id}.pdf"
             update_plan_pdf_url(plan_id, pdf_url)
         except Exception as e:
-            # Log but don't fail — still serve the file locally
             print(f"PDF upload failed: {e}")
 
     return FileResponse(
@@ -190,11 +223,12 @@ class BioRequest(BaseModel):
     career_stage: str
     vibes: list[str] = []
     about: Optional[str] = ""
-    platform: str = "instagram"
+    platform: str = "epk"
 
 
 @app.post("/bio")
 async def create_bio(request: BioRequest):
+    """Standalone bio generator (for /bio page)."""
     try:
         bios = generate_bios(
             stage_name=request.stage_name,
@@ -203,7 +237,7 @@ async def create_bio(request: BioRequest):
             career_stage=request.career_stage,
             vibes=request.vibes,
             about=request.about,
-            platform=request.platform,
+            research_data=None,
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -217,7 +251,6 @@ async def create_audit(
     youtube_files: list[UploadFile] = Form(None),
     twitter_files: list[UploadFile] = Form(None),
 ):
-    # Collect files by platform
     platform_files: dict[str, list[str]] = {}
     for platform, uploads in [
         ("instagram", insta_files or []),
@@ -246,7 +279,6 @@ async def create_audit(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Audit failed: {str(e)}")
     finally:
-        # Clean up temp files
         for paths in platform_files.values():
             for p in paths:
                 try:
@@ -254,10 +286,7 @@ async def create_audit(
                 except Exception:
                     pass
 
-    # Save to Supabase if configured
     audit_id = str(uuid.uuid4())[:8]
-    SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
-    SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "")
     if SUPABASE_URL and SUPABASE_KEY:
         try:
             from supabase import create_client
@@ -279,9 +308,6 @@ async def join_waitlist(request: dict):
     if not email or "@" not in email:
         raise HTTPException(status_code=400, detail="Invalid email")
 
-    SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
-    SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "")
-
     if SUPABASE_URL and SUPABASE_KEY:
         try:
             from supabase import create_client
@@ -289,7 +315,6 @@ async def join_waitlist(request: dict):
             supabase.table("waitlist").insert({"email": email}).execute()
         except Exception as e:
             print(f"Waitlist save failed: {e}")
-            # Fall through — still return success
 
     return JSONResponse({"ok": True, "message": "You're on the list."})
 
