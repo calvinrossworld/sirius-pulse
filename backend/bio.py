@@ -77,7 +77,7 @@ def generate_bios(stage_name: str, genre: str, subgenre: str, career_stage: str,
     )
 
     response = client.chat.completions.create(
-        model="google/gemini-2.5-pro",
+        model="openai/gpt-4.1-mini",
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_prompt},

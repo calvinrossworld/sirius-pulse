@@ -93,7 +93,7 @@ def generate_plan(artist_data: dict, max_retries: int = 2) -> dict:
     for attempt in range(max_retries + 1):
         try:
             response = client.chat.completions.create(
-                model="google/gemini-2.5-pro",
+                model="openai/gpt-4.1-mini",
                 messages=[
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": user_prompt},
