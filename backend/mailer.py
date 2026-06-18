@@ -1,4 +1,8 @@
-"""Email template builder and sender via Loops.so."""
+"""Email template builder and sender via Gmail SMTP."""
+import os
+import smtplib
+from email.message import EmailMessage
+
 
 def build_strategy_email(artist_name: str, plan_data: dict, bios: list = None, bio_platform: str = "instagram") -> dict:
     """Build a branded HTML email with the full strategy content."""
@@ -97,35 +101,33 @@ def build_strategy_email(artist_name: str, plan_data: dict, bios: list = None, b
 
 
 def send_strategy_email(to_email: str, artist_name: str, plan_data: dict, bios: list = None, bio_platform: str = "instagram") -> bool:
-    """Send the strategy email via Loops.so transactional API."""
-    import os
-    import httpx
+    """Send the strategy email via Gmail SMTP."""
+    import ssl
 
-    api_key = os.environ.get("LOOPS_API_KEY", "")
-    if not api_key:
-        print("LOOPS_API_KEY not set")
+    gmail_user = os.environ.get("GMAIL_ADDRESS", "")
+    gmail_app_password = os.environ.get("GMAIL_APP_PASSWORD", "")
+
+    if not gmail_user or not gmail_app_password:
+        print("Gmail SMTP credentials not configured")
         return False
 
     email = build_strategy_email(artist_name, plan_data, bios, bio_platform)
 
+    msg = EmailMessage()
+    msg["From"] = f"Sirius Pulse <{gmail_user}>"
+    msg["To"] = to_email
+    msg["Subject"] = email["subject"]
+    msg.set_content("Your Sirius Pulse strategy is ready. Open the HTML version in your email client to view it.")
+    msg.add_alternative(email["html"], subtype="html")
+
     try:
-        with httpx.Client(timeout=15.0) as client:
-            response = client.post(
-                "https://app.loops.so/api/v1/transactional",
-                headers={
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json",
-                },
-                json={
-                    "subject": email["subject"],
-                    "recipient": to_email,
-                    "html": email["html"],
-                },
-            )
-            if response.status_code >= 400:
-                print(f"Loops error: {response.status_code} {response.text}")
-                return False
-            return True
+        context = ssl.create_default_context()
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.starttls(context=context)
+            server.ehlo()
+            server.login(gmail_user, gmail_app_password)
+            server.send_message(msg)
+        return True
     except Exception as e:
-        print(f"Email send failed: {e}")
+        print(f"Gmail SMTP send failed: {e}")
         return False
