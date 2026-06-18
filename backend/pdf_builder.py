@@ -25,7 +25,7 @@ def _to_text(val):
         return str(val)
 
 
-def build_pdf(plan_data: dict, artist_name: str, output_path: str):
+def build_pdf(plan_data: dict, artist_name: str, output_path: str, bios: list = None):
     doc = SimpleDocTemplate(
         output_path,
         pagesize=letter,
@@ -36,7 +36,7 @@ def build_pdf(plan_data: dict, artist_name: str, output_path: str):
     )
 
     styles = getSampleStyleSheet()
-    
+
     # Custom styles
     title_style = ParagraphStyle(
         "Title",
@@ -153,6 +153,15 @@ def build_pdf(plan_data: dict, artist_name: str, output_path: str):
         story.append(Paragraph("Growth Tactics", section_style))
         tactics_text = _to_text(tactics)
         story.append(Paragraph(tactics_text.replace("\n", "<br/>"), body_style))
+
+    # Bio section — only if bios were provided
+    if bios:
+        story.append(Paragraph("Artist Bio", section_style))
+        for i, bio in enumerate(bios, 1):
+            bio_text = _to_text(bio)
+            story.append(Paragraph(f"<b>Bio {i}:</b>", label_style))
+            story.append(Paragraph(bio_text.replace("\n", "<br/>"), body_style))
+            story.append(Spacer(1, 0.05 * inch))
 
     # Footer
     story.append(Spacer(1, 0.3 * inch))

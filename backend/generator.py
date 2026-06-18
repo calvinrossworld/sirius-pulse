@@ -1,6 +1,7 @@
 """AI strategy generator using OpenAI client with OpenRouter."""
 import os
 import json
+import re
 from openai import OpenAI
 
 client = OpenAI(
@@ -49,9 +50,34 @@ Return this exact JSON structure:
 Only include platforms from the list above. If 'all' was selected, include all four platforms."""
 
 
-def generate_plan(artist_data: dict) -> dict:
+def _parse_json(raw: str) -> dict | None:
+    """Attempt to parse JSON from model output, handling various formats."""
+    raw = raw.strip()
+    # Remove markdown code blocks
+    if raw.startswith("```"):
+        match = re.search(r"```(?:json)?\s*(.*?)```", raw, re.DOTALL)
+        if match:
+            raw = match.group(1).strip()
+    # Remove any leading/trailing non-JSON
+    raw = raw.strip()
+    # Try direct parse
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        pass
+    # Try extracting first { ... } block
+    try:
+        # Find the first { and last }
+        start = raw.index("{")
+        end = raw.rindex("}") + 1
+        return json.loads(raw[start:end])
+    except (ValueError, json.JSONDecodeError):
+        return None
+
+
+def generate_plan(artist_data: dict, max_retries: int = 2) -> dict:
     platforms_str = ", ".join(artist_data.get("platforms", []))
-    
+
     user_prompt = USER_PROMPT_TEMPLATE.format(
         stage_name=artist_data.get("stage_name", ""),
         genre=artist_data.get("genre", ""),
@@ -63,36 +89,44 @@ def generate_plan(artist_data: dict) -> dict:
         challenge=artist_data.get("challenge", "none specified"),
     )
 
-    response = client.chat.completions.create(
-        model="google/gemini-2.5-pro",
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_prompt},
-        ],
-        max_tokens=6144,
-        temperature=0.8,
-        response_format={"type": "json_object"},
-        extra_body={"thinking": {"type": "disabled"}},
-    )
+    last_error = None
+    for attempt in range(max_retries + 1):
+        try:
+            response = client.chat.completions.create(
+                model="google/gemini-2.5-pro",
+                messages=[
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": user_prompt},
+                ],
+                max_tokens=6144,
+                temperature=0.8,
+                response_format={"type": "json_object"},
+                extra_body={"thinking": {"type": "disabled"}},
+            )
 
-    raw = response.choices[0].message.content.strip()
-    # Strip markdown code blocks if present
-    if raw.startswith("```"):
-        raw = raw.split("```")[1]
-        if raw.startswith("json"):
-            raw = raw[4:]
-        raw = raw.strip()
+            raw = response.choices[0].message.content.strip()
+            result = _parse_json(raw)
 
-    result = json.loads(raw)
+            if result is None:
+                raise ValueError(f"Could not parse JSON from response: {raw[:200]}")
 
-    # Normalize growth_tactics to string if model returned an object
-    gt = result.get("growth_tactics")
-    if isinstance(gt, dict):
-        parts = []
-        if gt.get("next_7_days_actions"):
-            parts.append("Next 7 days: " + ". ".join(gt["next_7_days_actions"]))
-        if gt.get("things_to_avoid"):
-            parts.append("Avoid: " + ". ".join(gt["things_to_avoid"]))
-        result["growth_tactics"] = " | ".join(parts)
+            # Normalize growth_tactics to string if model returned an object
+            gt = result.get("growth_tactics")
+            if isinstance(gt, dict):
+                parts = []
+                if gt.get("next_7_days_actions"):
+                    parts.append("Next 7 days: " + ". ".join(gt["next_7_days_actions"]))
+                if gt.get("things_to_avoid"):
+                    parts.append("Avoid: " + ". ".join(gt["things_to_avoid"]))
+                result["growth_tactics"] = " | ".join(parts)
 
-    return result
+            return result
+
+        except Exception as e:
+            last_error = e
+            if attempt < max_retries:
+                # Retry without changing prompt
+                continue
+
+    # All retries exhausted
+    raise ValueError(f"Plan generation failed after {max_retries + 1} attempts: {last_error}")

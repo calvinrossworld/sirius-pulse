@@ -119,7 +119,10 @@ async def get_plan_route(plan_id: str = PathParam(..., description="Plan ID")):
 
 
 @app.get("/download/{plan_id}")
-async def download_plan(plan_id: str = PathParam(..., description="Plan ID")):
+async def download_plan(
+    plan_id: str = PathParam(..., description="Plan ID"),
+    bios: str = None,
+):
     plan = get_plan(plan_id)
     if not plan:
         raise HTTPException(status_code=404, detail="Plan not found")
@@ -127,8 +130,17 @@ async def download_plan(plan_id: str = PathParam(..., description="Plan ID")):
     artist_name = plan["artist"].get("stage_name", "Artist")
     pdf_path = PDF_DIR / f"{plan_id}.pdf"
 
+    # Parse bios if provided as JSON string
+    bio_list = None
+    if bios:
+        try:
+            import json
+            bio_list = json.loads(bios)
+        except Exception:
+            pass
+
     try:
-        build_pdf(plan["plan"], artist_name, str(pdf_path))
+        build_pdf(plan["plan"], artist_name, str(pdf_path), bios=bio_list)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"PDF error: {str(e)}")
 
