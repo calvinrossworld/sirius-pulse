@@ -172,7 +172,7 @@
       </div>
 
       <div class="btn-row">
-        <button type="button" class="btn-next" id="btn-1-next" >Continue →</button>
+        <button type="button" class="btn-next" id="btn-1-next" onclick="nextStep(1)">Continue →</button>
       </div>
       <div class="error-msg" id="err-1"></div>
     </div>
@@ -211,8 +211,8 @@
       </div>
 
       <div class="btn-row">
-        <button type="button" class="btn-back" id="btn-2-back">← Back</button>
-        <button type="button" class="btn-next" id="btn-2-next" >Continue →</button>
+        <button type="button" class="btn-back" id="btn-2-back" onclick="prevStep(2)">← Back</button>
+        <button type="button" class="btn-next" id="btn-2-next" onclick="nextStep(2)">Continue →</button>
       </div>
       <div class="error-msg" id="err-2"></div>
     </div>
@@ -234,8 +234,8 @@
       </div>
 
       <div class="btn-row">
-        <button type="button" class="btn-back" id="btn-3-back">← Back</button>
-        <button type="button" class="btn-next" id="btn-3-next">Review →</button>
+        <button type="button" class="btn-back" id="btn-3-back" onclick="prevStep(3)">← Back</button>
+        <button type="button" class="btn-next" id="btn-3-next" onclick="nextStep(3)">Review →</button>
       </div>
       <div class="error-msg" id="err-3"></div>
     </div>
@@ -261,8 +261,8 @@
       </div>
 
       <div class="btn-row">
-        <button type="button" class="btn-back" id="btn-4-back">← Back</button>
-        <button type="button" class="btn-generate" id="btn-generate" >
+        <button type="button" class="btn-back" id="btn-4-back" onclick="prevStep(4)">← Back</button>
+        <button type="button" class="btn-generate" id="btn-generate" onclick="submitStrategy()">
           Generate My Strategy
         </button>
       </div>
@@ -580,20 +580,5 @@
       document.getElementById('results-section').innerHTML = html;
     }
 
-    // Attach button handlers — run immediately in case DOM is already loaded
-    function attachHandlers() {
-      document.getElementById('btn-1-next')?.addEventListener('click', function() { nextStep(1); });
-      document.getElementById('btn-2-back')?.addEventListener('click', function() { prevStep(2); });
-      document.getElementById('btn-2-next')?.addEventListener('click', function() { nextStep(2); });
-      document.getElementById('btn-3-back')?.addEventListener('click', function() { prevStep(3); });
-      document.getElementById('btn-3-next')?.addEventListener('click', function() { nextStep(3); });
-      document.getElementById('btn-4-back')?.addEventListener('click', function() { prevStep(4); });
-      document.getElementById('btn-generate')?.addEventListener('click', function() { submitStrategy(); });
-    }
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', attachHandlers);
-    } else {
-      attachHandlers();
-    }
   </script>
 </html>
