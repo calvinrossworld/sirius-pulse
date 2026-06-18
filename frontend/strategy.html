@@ -505,7 +505,7 @@
           </div>
         </div>
         <div style="display:flex;flex-direction:column;gap:12px;margin-top:20px">
-          <a href="/" onclick="alert('Your strategy will appear in the main app. Returning home.')" class="btn-primary" style="text-align:center;text-decoration:none;display:block">View Full Strategy</a>
+          <a href="/download/${planId}" class="btn-primary" style="text-align:center;text-decoration:none;display:block">Download PDF</a>
           <button class="btn-next" onclick="window.location.href='/strategy'" style="background:#1F2937;color:#9CA3AF;font-weight:600">Start Over</button>
         </div>`;
 
@@ -528,7 +528,7 @@
       }
 
       document.getElementById('results-plan').innerHTML = html;
-      document.getElementById('plan-id-display').textContent = 'Plan ID: ' + planId;
+      document.getElementById('plan-id-display').textContent = 'Plan saved. Download your PDF below.';
     }
   </script>
 </body>
