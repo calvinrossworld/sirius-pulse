@@ -435,16 +435,19 @@
       const loaderText = document.querySelector('.loader-text');
       const loaderSub = document.querySelector('.loader-sub');
       loaderText.textContent = wantBio ? 'Building your strategy & generating your bio…' : 'Building your strategy…';
-      loaderSub.textContent = wantBio ? 'This takes about 20–40 seconds' : 'This takes about 20–30 seconds';
+      loaderSub.textContent = 'Just a moment — instance may be waking up…';
       document.getElementById('loading-section').style.display = 'block';
 
       try {
         // Fire strategy + optional bio in parallel
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 90000); // 90s for cold start
         const strategyPromise = fetch(API_BASE + '/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
-        });
+          signal: controller.signal,
+        }).finally(() => clearTimeout(timeout));
 
         let bioResult = null;
         if (wantBio) {
@@ -459,11 +462,14 @@
             about: about,
             platform: platform,
           };
+          const bioController = new AbortController();
+          const bioTimeout = setTimeout(() => bioController.abort(), 90000);
           const bioRes = await fetch(API_BASE + '/bio', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(bioPayload),
-          });
+            signal: bioController.signal,
+          }).finally(() => clearTimeout(bioTimeout));
           if (!bioRes.ok) throw new Error('Bio generation failed');
           const bioData = await bioRes.json();
           bioResult = bioData.bios;
@@ -481,7 +487,10 @@
         document.getElementById('loading-section').style.display = 'none';
         document.getElementById('step-4').classList.add('active');
         document.getElementById('progress-wrap').style.display = 'block';
-        showError(4, err.message);
+        const msg = err.name === 'AbortError'
+          ? 'Request timed out — the server may still be waking up. Please try again in a moment.'
+          : err.message;
+        showError(4, msg);
       }
     }
 
