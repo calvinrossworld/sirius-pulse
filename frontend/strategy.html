@@ -401,7 +401,9 @@ clearError(step);
         formData.career_stage = stage;
         document.getElementById('err-1').textContent = 'All good — calling showStep(1,2)...';
         document.getElementById('err-1').classList.add('show');
+        alert('About to call showStep(1,2). currentStep=' + currentStep);
         showStep(1, 2);
+        alert('showStep returned! currentStep=' + currentStep + ' step-2 has active=' + document.getElementById('step-2').classList.contains('active'));
       }
 
       else if (step === 2) {
