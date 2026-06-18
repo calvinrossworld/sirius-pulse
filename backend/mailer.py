@@ -1,6 +1,4 @@
-"""Email template builder and sender via Resend."""
-import os
-import json
+"""Email template builder and sender via Loops.so."""
 
 def build_strategy_email(artist_name: str, plan_data: dict, bios: list = None, bio_platform: str = "instagram") -> dict:
     """Build a branded HTML email with the full strategy content."""
@@ -34,9 +32,7 @@ def build_strategy_email(artist_name: str, plan_data: dict, bios: list = None, b
             caption = ex.get("caption_hint", "")
             ex_items.append(f'<li style="margin-bottom:12px"><strong style="color:#fff">{icon} {fmt}</strong><br><span style="color:#9CA3AF">{hook}</span><br><span style="color:#6B7280;font-size:13px">Caption: {caption}</span></li>')
 
-        examples_html = ""
-        if ex_items:
-            examples_html = f"<ul style='list-style:none;padding:0;margin:0'>{''.join(ex_items)}</ul>"
+        examples_html = f"<ul style='list-style:none;padding:0;margin:0'>{''.join(ex_items)}</ul>" if ex_items else ""
 
         return f"""
         <div style="margin-bottom:32px">
@@ -76,36 +72,18 @@ def build_strategy_email(artist_name: str, plan_data: dict, bios: list = None, b
 </head>
 <body style="margin:0;padding:0;background:#0A0A0A;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif">
   <div style="max-width:600px;margin:0 auto;padding:40px 24px">
-
-    <!-- Header -->
     <div style="margin-bottom:40px">
       <div style="font-size:13px;font-weight:800;letter-spacing:3px;color:#4F8EFF;margin-bottom:8px">SIRIUS PULSE</div>
       <h1 style="font-size:28px;font-weight:900;color:#fff;margin:0 0 8px">Your Content Strategy</h1>
       <p style="color:#6B7280;font-size:15px;margin:0">Prepared for {artist_name}</p>
     </div>
-
-    <!-- Divider -->
     <div style="height:1px;background:#1F2937;margin:32px 0"></div>
-
-    <!-- Profile Audit -->
     {section("Profile Audit", profile_audit)}
-
-    <!-- Platforms -->
     {section("Platform Strategy", platform_sections)}
-
-    <!-- Caption Framework -->
     {section("Caption Framework", caption_framework)}
-
-    <!-- 30-Day Calendar -->
     {section("30-Day Content Calendar", calendar)}
-
-    <!-- Growth Tactics -->
     {section("Growth Tactics", growth_tactics)}
-
-    <!-- Bios -->
     {bios_html}
-
-    <!-- Footer -->
     <div style="height:1px;background:#1F2937;margin:32px 0"></div>
     <div style="color:#374151;font-size:11px;text-align:center">
       Built with Sirius Pulse · Free AI tools for independent artists
@@ -115,33 +93,39 @@ def build_strategy_email(artist_name: str, plan_data: dict, bios: list = None, b
 </html>"""
 
     subject = f"Your Sirius Pulse Strategy — {artist_name}"
-
-    return {
-        "subject": subject,
-        "html": html,
-    }
+    return {"subject": subject, "html": html}
 
 
 def send_strategy_email(to_email: str, artist_name: str, plan_data: dict, bios: list = None, bio_platform: str = "instagram") -> bool:
-    """Send the strategy email via Resend."""
+    """Send the strategy email via Loops.so transactional API."""
+    import os
+    import httpx
+
+    api_key = os.environ.get("LOOPS_API_KEY", "")
+    if not api_key:
+        print("LOOPS_API_KEY not set")
+        return False
+
+    email = build_strategy_email(artist_name, plan_data, bios, bio_platform)
+
     try:
-        import resend
-        api_key = os.environ.get("RESEND_API_KEY", "")
-        if not api_key:
-            print("RESEND_API_KEY not set")
-            return False
-
-        resend.api_key = api_key
-        email = build_strategy_email(artist_name, plan_data, bios, bio_platform)
-
-        params = {
-            "from": "Sirius Pulse <onboarding@resend.dev>",
-            "to": [to_email],
-            "subject": email["subject"],
-            "html": email["html"],
-        }
-        r = resend.Emails.send(params)
-        return True
+        with httpx.Client(timeout=15.0) as client:
+            response = client.post(
+                "https://app.loops.so/api/v1/transactional",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "subject": email["subject"],
+                    "recipient": to_email,
+                    "html": email["html"],
+                },
+            )
+            if response.status_code >= 400:
+                print(f"Loops error: {response.status_code} {response.text}")
+                return False
+            return True
     except Exception as e:
         print(f"Email send failed: {e}")
         return False
