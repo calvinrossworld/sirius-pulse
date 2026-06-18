@@ -1,0 +1,2 @@
+ALTER TABLE plans ADD COLUMN IF NOT EXISTS email TEXT;
+CREATE INDEX IF NOT EXISTS idx_plans_email ON plans(email);

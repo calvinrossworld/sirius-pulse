@@ -7,21 +7,20 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
-from fastapi import Path as PathParam
+from fastapi import Path as PathParam, Query
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import Optional
 
 from generator import generate_plan
 from pdf_builder import build_pdf
-from storage import save_plan, get_plan, update_plan_pdf_url
+from storage import save_plan, get_plan, get_plan_by_email, email_exists, update_plan_pdf_url
 from auditor import audit_profiles
 from bio import generate_bios
 from mailer import send_strategy_email
 
-app = FastAPI(title="Sirius Pulse API", version="1.4")
+app = FastAPI(title="Sirius Pulse API", version="1.5")
 
-# Serve frontend static files
 BASE_DIR = Path(__file__).parent
 FRONTEND_DIR = BASE_DIR.parent / "frontend"
 app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
@@ -38,7 +37,11 @@ PDF_DIR = BASE_DIR / "pdfs"
 PDF_DIR.mkdir(exist_ok=True)
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
-SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "")
+SUPABASE_KEY = ***"SUPABASE_SERVICE_KEY", "")
+
+
+class EmailCheckRequest(BaseModel):
+    email: str
 
 
 class GenerateRequest(BaseModel):
@@ -51,14 +54,39 @@ class GenerateRequest(BaseModel):
     model_artists: Optional[str] = ""
     challenge: Optional[str] = ""
     include_research: bool = False
+    email: Optional[str] = ""
+
+
+@app.get("/api/check-email")
+async def check_email(email: str = Query(..., description="Email address to check")):
+    """Check if an email already has a plan. Returns existing plan_id if found."""
+    if not email or "@" not in email:
+        raise HTTPException(status_code=400, detail="Invalid email")
+
+    exists = email_exists(email)
+    existing_plan = get_plan_by_email(email) if exists else None
+
+    return JSONResponse({
+        "exists": exists,
+        "plan_id": existing_plan["plan_id"] if existing_plan else None,
+    })
 
 
 @app.post("/generate")
 async def generate(request: GenerateRequest):
     """Generate strategy + bio, save to Supabase, return plan_id."""
+    # Check email if provided
+    if request.email:
+        existing = get_plan_by_email(request.email)
+        if existing:
+            return JSONResponse({
+                "plan_id": existing["plan_id"],
+                "existing": True,
+                "message": "You already have a strategy. Use the download button below.",
+            })
+
     research_data = None
 
-    # Run research first if requested
     if request.include_research:
         try:
             from researcher import research_artist
@@ -68,17 +96,14 @@ async def generate(request: GenerateRequest):
                 model_artists=request.model_artists or "",
             )
         except Exception as e:
-            # Non-fatal: proceed without research
             print(f"Research failed: {e}")
             research_data = None
 
-    # Generate strategy
     try:
-        plan = generate_plan(request.model_dump(exclude={"include_research"}), research_data=research_data)
+        plan = generate_plan(request.model_dump(exclude={"include_research", "email"}), research_data=research_data)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    # Generate bios — always, using research context if available
     try:
         bios = generate_bios(
             stage_name=request.stage_name,
@@ -90,18 +115,17 @@ async def generate(request: GenerateRequest):
             research_data=research_data,
         )
     except Exception as e:
-        # Non-fatal: proceed without bios
         print(f"Bio generation failed: {e}")
         bios = []
 
-    # Save everything
     plan_id = save_plan({
-        "artist": request.model_dump(exclude={"include_research"}),
+        "artist": request.model_dump(exclude={"include_research", "email"}),
         "plan": plan,
         "bios": bios,
+        "email": request.email or "",
     })
 
-    return JSONResponse({"plan_id": plan_id})
+    return JSONResponse({"plan_id": plan_id, "existing": False})
 
 
 class SendPlanRequest(BaseModel):
@@ -113,7 +137,6 @@ class SendPlanRequest(BaseModel):
 
 @app.post("/api/send-plan")
 async def send_plan_route(request: SendPlanRequest):
-    """Fetch plan from Supabase and email it to the user."""
     email_addr = request.email.strip()
     if "@" not in email_addr:
         raise HTTPException(status_code=400, detail="Invalid email")
@@ -136,16 +159,13 @@ async def send_plan_route(request: SendPlanRequest):
     if not sent:
         raise HTTPException(status_code=500, detail="Failed to send email")
 
-    # Save to waitlist too
-    try:
-        from supabase import create_client
-        _supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-        _supabase.table("waitlist").upsert(
-            {"email": email_addr},
-            on_conflict="email",
-        ).execute()
-    except Exception as e:
-        print(f"Waitlist save error: {e}")
+    if SUPABASE_URL and SUPABASE_KEY:
+        ***
+            from supabase import create_client
+            supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+            supabase.table("waitlist").upsert({"email": email_addr}, on_conflict="email").execute()
+        except Exception as e:
+            print(f"Waitlist save error: {e}")
 
     return JSONResponse({"ok": True, "message": "Strategy sent!"})
 
@@ -173,10 +193,9 @@ async def download_plan(plan_id: str = PathParam(..., description="Plan ID")):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"PDF error: {str(e)}")
 
-    # Upload PDF to Supabase Storage
     pdf_url = None
     if SUPABASE_URL and SUPABASE_KEY:
-        try:
+        ***
             from supabase import create_client
             supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
             with open(pdf_path, "rb") as f:
@@ -228,7 +247,6 @@ class BioRequest(BaseModel):
 
 @app.post("/bio")
 async def create_bio(request: BioRequest):
-    """Standalone bio generator (for /bio page)."""
     try:
         bios = generate_bios(
             stage_name=request.stage_name,
@@ -288,7 +306,7 @@ async def create_audit(
 
     audit_id = str(uuid.uuid4())[:8]
     if SUPABASE_URL and SUPABASE_KEY:
-        try:
+        ***
             from supabase import create_client
             supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
             supabase.table("audits").insert({
@@ -309,7 +327,7 @@ async def join_waitlist(request: dict):
         raise HTTPException(status_code=400, detail="Invalid email")
 
     if SUPABASE_URL and SUPABASE_KEY:
-        try:
+        ***
             from supabase import create_client
             supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
             supabase.table("waitlist").insert({"email": email}).execute()
