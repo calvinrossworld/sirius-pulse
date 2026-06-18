@@ -439,17 +439,10 @@
       document.getElementById('loading-section').style.display = 'block';
 
       try {
-        // Fire strategy + optional bio in parallel
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 90000); // 90s for cold start
-        const strategyPromise = fetch(API_BASE + '/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-          signal: controller.signal,
-        }).finally(() => clearTimeout(timeout));
-
         let bioResult = null;
+        const payload = { ...formData };
+
+        // Generate bio first if requested, then include in the generate request
         if (wantBio) {
           const platform = document.getElementById('bio-platform').value;
           const about = document.getElementById('bio-about').value.trim();
@@ -473,9 +466,19 @@
           if (!bioRes.ok) throw new Error('Bio generation failed');
           const bioData = await bioRes.json();
           bioResult = bioData.bios;
+          payload.bios = bioResult;
         }
 
-        const strategyRes = await strategyPromise;
+        // Now send strategy request with bios included (if any)
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 90000);
+        const strategyRes = await fetch(API_BASE + '/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+        }).finally(() => clearTimeout(timeout));
+
         if (!strategyRes.ok) {
           const err = await strategyRes.json().catch(() => ({}));
           throw new Error(err.detail || 'Generation failed');

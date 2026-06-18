@@ -19,7 +19,7 @@ from auditor import audit_profiles
 from bio import generate_bios
 from mailer import send_strategy_email
 
-app = FastAPI(title="Sirius Pulse API", version="1.2")
+app = FastAPI(title="Sirius Pulse API", version="1.3")
 
 # Serve frontend static files
 BASE_DIR = Path(__file__).parent
@@ -50,6 +50,7 @@ class GenerateRequest(BaseModel):
     promoting: str
     model_artists: Optional[str] = ""
     challenge: Optional[str] = ""
+    bios: Optional[list[str]] = None
 
 
 @app.post("/generate")
@@ -59,7 +60,12 @@ async def generate(request: GenerateRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    plan_id = save_plan({"artist": request.model_dump(), "plan": plan})
+    # Include bios in stored data if provided
+    plan_id = save_plan({
+        "artist": request.model_dump(exclude={"bios"}),
+        "plan": plan,
+        "bios": request.bios or [],
+    })
 
     return JSONResponse({"plan_id": plan_id})
 
@@ -119,28 +125,17 @@ async def get_plan_route(plan_id: str = PathParam(..., description="Plan ID")):
 
 
 @app.get("/download/{plan_id}")
-async def download_plan(
-    plan_id: str = PathParam(..., description="Plan ID"),
-    bios: str = None,
-):
+async def download_plan(plan_id: str = PathParam(..., description="Plan ID")):
     plan = get_plan(plan_id)
     if not plan:
         raise HTTPException(status_code=404, detail="Plan not found")
 
     artist_name = plan["artist"].get("stage_name", "Artist")
     pdf_path = PDF_DIR / f"{plan_id}.pdf"
-
-    # Parse bios if provided as JSON string
-    bio_list = None
-    if bios:
-        try:
-            import json
-            bio_list = json.loads(bios)
-        except Exception:
-            pass
+    bios = plan.get("bios", [])
 
     try:
-        build_pdf(plan["plan"], artist_name, str(pdf_path), bios=bio_list)
+        build_pdf(plan["plan"], artist_name, str(pdf_path), bios=bios)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"PDF error: {str(e)}")
 
