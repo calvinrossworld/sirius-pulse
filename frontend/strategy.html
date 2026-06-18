@@ -172,7 +172,7 @@
       </div>
 
       <div class="btn-row">
-        <button type="button" class="btn-next" id="btn-1-next" onclick="nextStep(1)">Continue →</button>
+        <button type="button" class="btn-next" id="btn-1-next" onclick="alert('Button clicked! Running nextStep(1)...'); nextStep(1); return false;">Continue →</button>
       </div>
       <div class="error-msg" id="err-1"></div>
     </div>
@@ -377,20 +377,25 @@
     }
 
     function nextStep(step) {
-      clearError(step);
+      window.__lastClick = Date.now();
+      try {
+        clearError(step);
+      } catch(e) { alert('clearError error: ' + e); return; }
 
       if (step === 1) {
-        const name = document.getElementById('s1-name').value.trim();
-        const genre = document.getElementById('s1-genre').value;
-        const stage = document.getElementById('s1-stage').value;
-        if (!name) { showError(1, 'Please enter your stage name.'); return; }
-        if (!genre) { showError(1, 'Please select a genre.'); return; }
-        if (!stage) { showError(1, 'Please select your career stage.'); return; }
-        formData.stage_name = name;
-        formData.genre = genre;
-        formData.subgenre = document.getElementById('s1-subgenre').value.trim();
-        formData.career_stage = stage;
-        showStep(1, 2);
+        try {
+          const name = document.getElementById('s1-name').value.trim();
+          const genre = document.getElementById('s1-genre').value;
+          const stage = document.getElementById('s1-stage').value;
+          if (!name) { showError(1, 'Please enter your stage name.'); return; }
+          if (!genre) { showError(1, 'Please select a genre.'); return; }
+          if (!stage) { showError(1, 'Please select your career stage.'); return; }
+          formData.stage_name = name;
+          formData.genre = genre;
+          formData.subgenre = document.getElementById('s1-subgenre').value.trim();
+          formData.career_stage = stage;
+          showStep(1, 2);
+        } catch(e) { alert('Step 1 error: ' + e); }
       }
 
       else if (step === 2) {
