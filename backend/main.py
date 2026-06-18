@@ -218,6 +218,9 @@ async def download_plan(plan_id: str = PathParam(..., description="Plan ID")):
 @app.get("/strategy")
 async def strategy_page():
     return FileResponse(FRONTEND_DIR / "strategy.html")
+@app.get("/strategy-new")
+async def strategy_page_new():
+    return FileResponse(FRONTEND_DIR / "strategy.html")
 
 
 @app.get("/")
