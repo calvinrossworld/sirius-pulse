@@ -37,7 +37,7 @@ PDF_DIR = BASE_DIR / "pdfs"
 PDF_DIR.mkdir(exist_ok=True)
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
-SUPABASE_KEY = ***"SUPABASE_SERVICE_KEY", "")
+SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "")
 
 
 class EmailCheckRequest(BaseModel):
@@ -160,7 +160,7 @@ async def send_plan_route(request: SendPlanRequest):
         raise HTTPException(status_code=500, detail="Failed to send email")
 
     if SUPABASE_URL and SUPABASE_KEY:
-        ***
+        try:
             from supabase import create_client
             supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
             supabase.table("waitlist").upsert({"email": email_addr}, on_conflict="email").execute()
@@ -195,7 +195,7 @@ async def download_plan(plan_id: str = PathParam(..., description="Plan ID")):
 
     pdf_url = None
     if SUPABASE_URL and SUPABASE_KEY:
-        ***
+        try:
             from supabase import create_client
             supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
             with open(pdf_path, "rb") as f:
@@ -306,7 +306,7 @@ async def create_audit(
 
     audit_id = str(uuid.uuid4())[:8]
     if SUPABASE_URL and SUPABASE_KEY:
-        ***
+        try:
             from supabase import create_client
             supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
             supabase.table("audits").insert({
@@ -327,7 +327,7 @@ async def join_waitlist(request: dict):
         raise HTTPException(status_code=400, detail="Invalid email")
 
     if SUPABASE_URL and SUPABASE_KEY:
-        ***
+        try:
             from supabase import create_client
             supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
             supabase.table("waitlist").insert({"email": email}).execute()
