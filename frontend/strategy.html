@@ -394,6 +394,7 @@
           formData.genre = genre;
           formData.subgenre = document.getElementById('s1-subgenre').value.trim();
           formData.career_stage = stage;
+          alert('All validation passed. Calling showStep(1,2) now...');
           showStep(1, 2);
         } catch(e) { alert('Step 1 error: ' + e); }
       }
