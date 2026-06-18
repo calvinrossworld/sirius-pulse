@@ -1,7 +1,6 @@
-"""Email template builder and sender via Gmail SMTP."""
+"""Email template builder and sender via Mailgun API."""
 import os
-import smtplib
-from email.message import EmailMessage
+import httpx
 
 
 def build_strategy_email(artist_name: str, plan_data: dict, bios: list = None, bio_platform: str = "instagram") -> dict:
@@ -101,33 +100,32 @@ def build_strategy_email(artist_name: str, plan_data: dict, bios: list = None, b
 
 
 def send_strategy_email(to_email: str, artist_name: str, plan_data: dict, bios: list = None, bio_platform: str = "instagram") -> bool:
-    """Send the strategy email via Gmail SMTP."""
-    import ssl
+    """Send the strategy email via Mailgun API."""
+    api_key = os.environ.get("MAILGUN_API_KEY", "")
+    domain = os.environ.get("MAILGUN_DOMAIN", "")
 
-    gmail_user = os.environ.get("GMAIL_ADDRESS", "")
-    gmail_app_password = os.environ.get("GMAIL_APP_PASSWORD", "")
-
-    if not gmail_user or not gmail_app_password:
-        print("Gmail SMTP credentials not configured")
+    if not api_key or not domain:
+        print("MAILGUN_API_KEY or MAILGUN_DOMAIN not set")
         return False
 
     email = build_strategy_email(artist_name, plan_data, bios, bio_platform)
 
-    msg = EmailMessage()
-    msg["From"] = f"Sirius Pulse <{gmail_user}>"
-    msg["To"] = to_email
-    msg["Subject"] = email["subject"]
-    msg.set_content("Your Sirius Pulse strategy is ready. Open the HTML version in your email client to view it.")
-    msg.add_alternative(email["html"], subtype="html")
-
     try:
-        context = ssl.create_default_context()
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
-            server.starttls(context=context)
-            server.ehlo()
-            server.login(gmail_user, gmail_app_password)
-            server.send_message(msg)
+        response = httpx.post(
+            f"https://api.mailgun.net/v3/{domain}/messages",
+            auth=("api", api_key),
+            data={
+                "from": f"Sirius Pulse <mailgun@{domain}>",
+                "to": to_email,
+                "subject": email["subject"],
+                "html": email["html"],
+            },
+            timeout=15.0,
+        )
+        if response.status_code >= 400:
+            print(f"Mailgun error: {response.status_code} {response.text}")
+            return False
         return True
     except Exception as e:
-        print(f"Gmail SMTP send failed: {e}")
+        print(f"Email send failed: {e}")
         return False
