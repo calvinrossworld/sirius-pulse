@@ -1,4 +1,4 @@
-"""Email template builder and sender via Mailgun API."""
+"""Email sender via Resend API."""
 import os
 import httpx
 
@@ -100,30 +100,33 @@ def build_strategy_email(artist_name: str, plan_data: dict, bios: list = None, b
 
 
 def send_strategy_email(to_email: str, artist_name: str, plan_data: dict, bios: list = None, bio_platform: str = "instagram") -> bool:
-    """Send the strategy email via Mailgun API."""
-    api_key = os.environ.get("MAILGUN_API_KEY", "")
-    domain = os.environ.get("MAILGUN_DOMAIN", "")
+    """Send the strategy email via Resend API."""
+    api_key = os.environ.get("RESEND_API_KEY", "")
+    from_address = os.environ.get("RESEND_FROM_EMAIL", "Sirius Pulse <strategy@siriuspulse.ai>")
 
-    if not api_key or not domain:
-        print("MAILGUN_API_KEY or MAILGUN_DOMAIN not set")
+    if not api_key:
+        print("RESEND_API_KEY not set")
         return False
 
     email = build_strategy_email(artist_name, plan_data, bios, bio_platform)
 
     try:
         response = httpx.post(
-            f"https://api.mailgun.net/v3/{domain}/messages",
-            auth=("api", api_key),
-            data={
-                "from": f"Sirius Pulse <mailgun@{domain}>",
-                "to": to_email,
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "from": from_address,
+                "to": [to_email],
                 "subject": email["subject"],
                 "html": email["html"],
             },
             timeout=15.0,
         )
         if response.status_code >= 400:
-            print(f"Mailgun error: {response.status_code} {response.text}")
+            print(f"Resend error: {response.status_code} {response.text}")
             return False
         return True
     except Exception as e:
