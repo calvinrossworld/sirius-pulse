@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Artist Evolution Engine - Sirius Pulse</title>
+  <meta name="description" content="A systematic artist development framework that diagnoses where you are, builds your identity language, and maps exactly what to do next.">
+  <link rel="icon" href="/static/logo-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black: #0A0A0A;
+      --surface: #111827;
+      --surface-2: #151B27;
+      --border: #1F2937;
+      --blue: #4F8EFF;
+      --blue-soft: rgba(79, 142, 255, 0.14);
+      --silver: #D8DEE9;
+      --white: #FFFFFF;
+      --gray: #9CA3AF;
+      --muted: #6B7280;
+      --gold: #D7B66D;
+      --violet: #B37BFF;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background:
+        radial-gradient(circle at 50% -10%, rgba(79, 142, 255, 0.16), transparent 34%),
+        linear-gradient(180deg, #0A0A0A 0%, #0D111A 48%, #0A0A0A 100%);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 48px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--white);
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 12px rgba(79, 142, 255, 0.42));
+    }
+
+    .logo-name {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 3px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--gray);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .nav-links a:hover { color: var(--white); }
+
+    .nav-cta {
+      background: var(--blue);
+      color: var(--white) !important;
+      border-radius: 8px;
+      padding: 10px 18px;
+    }
+
+    .hero {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 76px 24px 64px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.12fr) minmax(300px, 0.88fr);
+      gap: 52px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-size: clamp(42px, 7vw, 78px);
+      font-weight: 900;
+      line-height: 0.96;
+      letter-spacing: -1px;
+      margin-bottom: 24px;
+    }
+
+    h1 span {
+      color: var(--blue);
+      text-shadow: 0 0 28px rgba(79, 142, 255, 0.24);
+    }
+
+    .hero-copy {
+      color: var(--gray);
+      font-size: 18px;
+      max-width: 640px;
+      margin-bottom: 34px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      padding: 0 24px;
+      font-size: 15px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      color: var(--white);
+      box-shadow: 0 16px 42px rgba(79, 142, 255, 0.22);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      color: var(--silver);
+    }
+
+    .engine-panel {
+      background: linear-gradient(145deg, rgba(255,255,255,0.075), rgba(255,255,255,0.025));
+      border: 1px solid rgba(216, 222, 233, 0.16);
+      border-radius: 8px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
+    }
+
+    .engine-panel::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      background: radial-gradient(circle at 50% 12%, rgba(79, 142, 255, 0.20), transparent 38%);
+      pointer-events: none;
+    }
+
+    .panel-inner {
+      position: relative;
+      min-height: 420px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+
+    .panel-logo {
+      width: 142px;
+      height: 142px;
+      filter: drop-shadow(0 0 28px rgba(79, 142, 255, 0.38));
+      margin-bottom: 24px;
+    }
+
+    .panel-title {
+      color: var(--silver);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .panel-metric {
+      border-top: 1px solid rgba(216, 222, 233, 0.12);
+      display: grid;
+      gap: 10px;
+      margin-top: 26px;
+      padding-top: 22px;
+      text-align: left;
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      color: var(--gray);
+      font-size: 13px;
+    }
+
+    .metric-row strong { color: var(--white); }
+
+    .band {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: rgba(17, 24, 39, 0.78);
+    }
+
+    .section {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 78px 24px;
+    }
+
+    .section-head {
+      max-width: 720px;
+      margin-bottom: 40px;
+    }
+
+    .section-label {
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    h2 {
+      font-size: clamp(30px, 4vw, 46px);
+      line-height: 1.08;
+      font-weight: 900;
+      letter-spacing: -0.4px;
+      margin-bottom: 16px;
+    }
+
+    .section-head p,
+    .body-copy {
+      color: var(--gray);
+      font-size: 16px;
+      max-width: 760px;
+    }
+
+    .split-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .info-card,
+    .proof-card,
+    .deliverable-card,
+    .stage {
+      background: rgba(17, 24, 39, 0.82);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 26px;
+    }
+
+    .info-card h3,
+    .deliverable-card h3,
+    .proof-card h3 {
+      font-size: 19px;
+      margin-bottom: 12px;
+    }
+
+    .info-card p,
+    .deliverable-card li,
+    .proof-card p,
+    .stage p {
+      color: var(--gray);
+      font-size: 14px;
+    }
+
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .stage {
+      min-height: 210px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stage-num {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .stage h3 {
+      color: var(--white);
+      font-size: 17px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .stage:nth-child(1) h3,
+    .stage:nth-child(4) h3 { color: var(--gold); }
+    .stage:nth-child(2) h3,
+    .stage:nth-child(5) h3 { color: var(--blue); }
+    .stage:nth-child(3) h3 { color: var(--violet); }
+
+    .deliverable-grid,
+    .proof-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    ul {
+      list-style: none;
+      display: grid;
+      gap: 12px;
+    }
+
+    li {
+      position: relative;
+      padding-left: 18px;
+    }
+
+    li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 9px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    .proof-city {
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .proof-docs {
+      border-top: 1px solid var(--border);
+      color: var(--muted) !important;
+      margin-top: 18px;
+      padding-top: 14px;
+      font-size: 12px !important;
+    }
+
+    .cta {
+      text-align: center;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .cta p {
+      color: var(--gray);
+      font-size: 17px;
+      margin: 0 auto 32px;
+      max-width: 640px;
+    }
+
+    footer {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--border);
+    }
+
+    footer p,
+    footer a {
+      color: var(--muted);
+      font-size: 13px;
+      text-decoration: none;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 22px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 900px) {
+      nav { padding: 20px 24px; }
+      .nav-links { gap: 16px; }
+      .hero,
+      .split-grid,
+      .deliverable-grid,
+      .proof-grid {
+        grid-template-columns: 1fr;
+      }
+      .process-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .hero { padding-top: 42px; gap: 34px; }
+    }
+
+    @media (max-width: 640px) {
+      nav {
+        align-items: flex-start;
+        gap: 18px;
+        flex-direction: column;
+      }
+      .nav-links {
+        width: 100%;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .nav-links a { font-size: 13px; }
+      .nav-cta { padding: 9px 12px; }
+      .hero { padding: 34px 20px 54px; }
+      .section { padding: 58px 20px; }
+      .process-grid { grid-template-columns: 1fr; }
+      .panel-inner { min-height: 340px; }
+      .panel-logo { width: 112px; height: 112px; }
+      h1 { font-size: 42px; }
+      footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="logo">
+      <img class="logo-icon" src="/static/logo-mark.svg" alt="" aria-hidden="true">
+      <span class="logo-name">SIRIUS PULSE</span>
+    </a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/strategy">Strategy Tool</a>
+      <a href="/artist-evolution-engine" class="nav-cta">The Engine</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Powered by Sirius Pulse</p>
+        <h1>The Artist <span>Evolution</span> Engine</h1>
+        <p class="hero-copy">A systematic framework that diagnoses where you are, builds your identity language, and maps exactly what to do next - so you stop guessing and start building.</p>
+        <div class="hero-actions">
+          <a href="/strategy" class="btn-primary">Start the First Pass</a>
+          <a href="#process" class="btn-secondary">See the process</a>
+        </div>
+      </div>
+
+      <aside class="engine-panel" aria-label="Artist Evolution Engine summary">
+        <div class="panel-inner">
+          <div>
+            <img class="panel-logo" src="/static/logo-mark.svg" alt="Sirius Pulse">
+            <p class="panel-title">Complete Artist Package</p>
+            <div class="panel-metric">
+              <div class="metric-row"><span>Framework</span><strong>5 stages</strong></div>
+              <div class="metric-row"><span>Diagnostic</span><strong>8 sections</strong></div>
+              <div class="metric-row"><span>Output</span><strong>Print-ready PDFs</strong></div>
+              <div class="metric-row"><span>Focus</span><strong>Identity + execution</strong></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="band">
+      <div class="section">
+        <div class="split-grid">
+          <article class="info-card">
+            <h3>The Problem</h3>
+            <p>Most independent artists have real talent, a real catalog, and real stories, but none of it is packaged in a way that makes strangers stop, follow, and stream. The gap is not the music. It is that no one has built the container around it.</p>
+          </article>
+          <article class="info-card">
+            <h3>The Solution</h3>
+            <p>The Artist Evolution Engine runs a systematic diagnostic on where you actually are, defines clear identity and positioning, and builds a complete strategic and content plan specific to your situation.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="process">
+      <div class="section-head">
+        <p class="section-label">How It Works</p>
+        <h2>The 5-stage process</h2>
+        <p>Each stage turns scattered artist context into a clearer operating system: diagnosis, identity, strategy, content, and execution.</p>
+      </div>
+
+      <div class="process-grid">
+        <article class="stage">
+          <p class="stage-num">Stage 01</p>
+          <h3>Research</h3>
+          <p>Full public audit of your platforms, catalog, story, proof points, and co-signs.</p>
+        </article>
+        <article class="stage">
+          <p class="stage-num">Stage 02</p>
+          <h3>Diagnosis</h3>
+          <p>Present Reality Analysis: an 8-section breakdown of where you are and why.</p>
+        </article>
+        <article class="stage">
+          <p class="stage-num">Stage 03</p>
+          <h3>Identity</h3>
+          <p>Visual direction, bio package, positioning language, and artist-specific clarity.</p>
+        </article>
+        <article class="stage">
+          <p class="stage-num">Stage 04</p>
+          <h3>Strategy</h3>
+          <p>Positioning, content lanes, and brand voice built around your actual bottleneck.</p>
+        </article>
+        <article class="stage">
+          <p class="stage-num">Stage 05</p>
+          <h3>Execution</h3>
+          <p>A 30-day content plan and campaign roadmap ready to move into action.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="section">
+        <div class="section-head">
+          <p class="section-label">What You Receive</p>
+          <h2>Built specifically for the artist in front of us</h2>
+          <p>Not a template. Not a fill-in-the-blank exercise. The Engine turns your story, catalog, and bottleneck into usable strategy documents.</p>
+        </div>
+
+        <div class="deliverable-grid">
+          <article class="deliverable-card">
+            <h3>Identity Documents</h3>
+            <ul>
+              <li>Present Reality Analysis</li>
+              <li>Short bio, long bio, and stripped platform bio</li>
+              <li>Language guidance: what to say and what to avoid</li>
+            </ul>
+          </article>
+          <article class="deliverable-card">
+            <h3>Strategy Documents</h3>
+            <ul>
+              <li>Locked positioning statement</li>
+              <li>Competitive angle against the lane</li>
+              <li>Brand voice and content lane strategy</li>
+            </ul>
+          </article>
+          <article class="deliverable-card">
+            <h3>Execution Documents</h3>
+            <ul>
+              <li>Weekly posting cadence</li>
+              <li>20-post, 30-day content plan</li>
+              <li>Campaign roadmap and print-ready PDFs</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <p class="section-label">Built And Proven</p>
+        <h2>First Pass packages completed</h2>
+      </div>
+
+      <div class="proof-grid">
+        <article class="proof-card">
+          <h3>Kendall Day</h3>
+          <p class="proof-city">Detroit, MI</p>
+          <p>Diagnosis: scale and conversion problem. Strong catalog, low visibility. Strategy built around emotional depth and Detroit identity.</p>
+          <p class="proof-docs">Bio - Positioning - Content Lanes - 30-Day Plan</p>
+        </article>
+        <article class="proof-card">
+          <h3>Raww Blue</h3>
+          <p class="proof-city">Brooklyn, NY x Atlanta, GA</p>
+          <p>Diagnosis: positioning and belief problem. Years of history and credibility were not visible enough publicly.</p>
+          <p class="proof-docs">Bio - Positioning - Content Lanes - 30-Day Plan</p>
+        </article>
+        <article class="proof-card">
+          <h3>Showchino</h3>
+          <p class="proof-city">Jackson, TN to Nashville, TN</p>
+          <p>Diagnosis: audience-entry problem. Real catalog and consistency, but the first impression needed sharper identity clarity.</p>
+          <p class="proof-docs">Full Engine Package - Positioning - Brand Voice - Rollout</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="section">
+        <div class="cta">
+          <p class="section-label">Ready To Run It?</p>
+          <h2>Start with the first pass.</h2>
+          <p>The Engine starts with a focused intake and a conversation. From there, Sirius Pulse builds the diagnosis, identity, strategy, and plan.</p>
+          <a href="/strategy" class="btn-primary">Start the Strategy Intake</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <a href="/" class="logo">
+      <img class="logo-icon" src="/static/logo-mark.svg" alt="" aria-hidden="true">
+      <span class="logo-name">SIRIUS PULSE</span>
+    </a>
+    <div class="footer-links">
+      <a href="/artist-evolution-engine">Artist Evolution Engine</a>
+      <a href="/strategy">Content Strategy</a>
+      <a href="/bio">Bio Generator</a>
+    </div>
+    <p>© 2025 Sirius Pulse. Built for independent artists.</p>
+  </footer>
+</body>
+</html>

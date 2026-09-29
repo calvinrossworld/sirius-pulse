@@ -260,6 +260,11 @@ async def root():
     return FileResponse(FRONTEND_DIR / "index.html")
 
 
+@app.get("/artist-evolution-engine")
+async def artist_evolution_engine_page():
+    return FileResponse(FRONTEND_DIR / "artist-evolution-engine.html")
+
+
 @app.get("/audit")
 async def audit_page():
     return FileResponse(FRONTEND_DIR / "audit.html")
