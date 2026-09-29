@@ -75,57 +75,89 @@ async def check_email(email: str = Query(..., description="Email address to chec
 @app.post("/generate")
 async def generate(request: GenerateRequest):
     """Generate strategy + bio, save to Supabase, return plan_id."""
-    # Check email if provided
-    if request.email:
-        existing = get_plan_by_email(request.email)
-        if existing:
-            return JSONResponse({
-                "plan_id": existing["plan_id"],
-                "existing": True,
-                "message": "You already have a strategy. Use the download button below.",
-            })
+    try:
+        request_data = _model_data(request, exclude={"include_research", "email"})
 
-    research_data = None
+        # Check email if provided
+        if request.email:
+            existing = get_plan_by_email(request.email)
+            if existing:
+                return JSONResponse({
+                    "plan_id": existing["plan_id"],
+                    "existing": True,
+                    "message": "You already have a strategy. Use the download button below.",
+                })
 
-    if request.include_research:
+        research_data = None
+
+        if request.include_research:
+            try:
+                from researcher import research_artist
+                research_data = research_artist(
+                    stage_name=request.stage_name,
+                    genre=request.genre,
+                    model_artists=request.model_artists or "",
+                )
+            except Exception as e:
+                print(f"Research failed: {e}")
+                research_data = None
+
         try:
-            from researcher import research_artist
-            research_data = research_artist(
+            plan = generate_plan(request_data, research_data=research_data)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
+        try:
+            bios = generate_bios(
                 stage_name=request.stage_name,
                 genre=request.genre,
-                model_artists=request.model_artists or "",
+                subgenre=request.subgenre,
+                career_stage=request.career_stage,
+                vibes=[],
+                about="",
+                research_data=research_data,
             )
         except Exception as e:
-            print(f"Research failed: {e}")
-            research_data = None
+            print(f"Bio generation failed: {e}")
+            bios = []
 
-    try:
-        plan = generate_plan(request.model_dump(exclude={"include_research", "email"}), research_data=research_data)
+        plan_id = save_plan({
+            "artist": request_data,
+            "plan": plan,
+            "bios": bios,
+            "email": request.email or "",
+        })
+
+        return JSONResponse({"plan_id": plan_id, "existing": False})
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"Generate route failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Generate route failed: {e}")
 
+
+def _model_data(model: BaseModel, exclude: set[str] | None = None) -> dict:
+    """Return model data on both Pydantic v1 and v2."""
+    if hasattr(model, "model_dump"):
+        return model.model_dump(exclude=exclude)
+    return model.dict(exclude=exclude)
+
+
+@app.post("/api/debug/generate-storage")
+async def debug_generate_storage(request: GenerateRequest):
+    """Check storage wiring without calling the AI generator."""
     try:
-        bios = generate_bios(
-            stage_name=request.stage_name,
-            genre=request.genre,
-            subgenre=request.subgenre,
-            career_stage=request.career_stage,
-            vibes=[],
-            about="",
-            research_data=research_data,
-        )
+        request_data = _model_data(request, exclude={"include_research", "email"})
+        plan_id = save_plan({
+            "artist": request_data,
+            "plan": {"profile_audit": "debug"},
+            "bios": [],
+            "email": request.email or "",
+        })
+        return JSONResponse({"ok": True, "plan_id": plan_id})
     except Exception as e:
-        print(f"Bio generation failed: {e}")
-        bios = []
-
-    plan_id = save_plan({
-        "artist": request.model_dump(exclude={"include_research", "email"}),
-        "plan": plan,
-        "bios": bios,
-        "email": request.email or "",
-    })
-
-    return JSONResponse({"plan_id": plan_id, "existing": False})
+        print(f"Storage debug failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Storage debug failed: {e}")
 
 
 class SendPlanRequest(BaseModel):
