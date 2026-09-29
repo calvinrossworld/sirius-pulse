@@ -40,8 +40,10 @@ header { text-align: center; margin-bottom: 40px; }
 }
 
 .logo-icon {
-  font-size: 28px;
-  color: var(--blue);
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(79, 142, 255, 0.35));
   animation: pulse-icon 2s ease-in-out infinite;
 }
 

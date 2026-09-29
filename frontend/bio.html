@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Artist Bio — Sirius Pulse</title>
+  <link rel="icon" href="/static/logo-mark.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/style.css">
@@ -12,7 +13,7 @@
     .container { max-width: 720px; margin: 0 auto; padding: 40px 20px; }
     .logo-link { text-decoration: none; color: inherit; display: inline-block; margin-bottom: 36px; }
     .logo { display: flex; align-items: center; gap: 10px; }
-    .logo-icon { font-size: 24px; color: #4F8EFF; }
+    .logo-icon { width: 34px; height: 34px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(79,142,255,0.38)); }
     .logo-name { font-size: 16px; font-weight: 700; letter-spacing: 3px; }
     h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
     .subtitle { color: #6B7280; font-size: 15px; margin-bottom: 36px; }
@@ -72,7 +73,7 @@
   <div class="container">
     <a href="/" class="logo-link">
       <div class="logo">
-        <span class="logo-icon">◎</span>
+        <img class="logo-icon" src="/static/logo-mark.svg" alt="" aria-hidden="true">
         <span class="logo-name">SIRIUS PULSE</span>
       </div>
     </a>
